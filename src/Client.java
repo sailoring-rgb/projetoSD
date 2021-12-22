@@ -17,7 +17,7 @@ public class Client {
         menu();
         warning.interrupt();
         multi.close();
-        System.out.Println("Adeus!");
+        System.out.println("Adeus!");
     }
 
     public static void menu() throws InterruptedException{
