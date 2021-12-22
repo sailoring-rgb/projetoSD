@@ -17,9 +17,9 @@ public class Client {
 
     BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
 
-    String username = null;
+    String userusername = null;
 
-    while(username == null){
+    while(userusername == null){
         System.out.println(" Introduza a sua escolha: "
                         + "1: Login \n"
                         + "2: Registar \n"
