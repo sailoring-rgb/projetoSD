@@ -6,11 +6,14 @@ public class User {
     private String username;
     private String password;
     private String name;
+    private int isSpecial; /** 0 -> user normal ; 1 -> administrador */
     ReentrantLock lock = new ReentrantLock();
 
-    public User(String username, String password, String name) {
+    public User(String username, String password, String name, int isSpecial) {
         this.username = username;
         this.password = password;
+        this.name = name;
+        this.isSpecial = isSpecial;
     }
 
     public String getUsername() {
@@ -69,6 +72,25 @@ public class User {
         finally {
             lock.unlock();
         }
+    }
+
+    public int getSpecialUser() {
+        try{
+            lock.lock();
+            return this.isSpecial;
+        }
+        finally { lock.unlock(); }
+    }
+
+    public void setSpecialUser(String isSpecial){
+        try{
+            lock.lock();
+            this.isSpecial = isSpecial;
+        finally { lock.unlock(); }
+    }
+
+    public User clone(){
+        return new User(this);
     }
 
     public String toString () {

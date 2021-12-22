@@ -1,5 +1,3 @@
-// import Exceptions.PassIncorreta;
-
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayDeque;
