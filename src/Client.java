@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 
 public class Client {
     private static String user;
-    private static int admin;
+    private static int isSpecial;
     private static Demultiplexer multi;
     private static Thread warning;
 
@@ -66,9 +66,13 @@ public class Client {
                     String[] tokens = new String(reply1).split(":");  
                     System.out.println("\033[1;36m"+ tokens[0] +"\033[0m"); 
                     System.out.println(tokens[1]);
-                    admin = Integer.parseInt(tokens[1]);
+                    isSpecial = Integer.parseInt(tokens[1]);
                     user = name;
-                    funcionalidades();
+                    if(isSpecial == -1){
+                        funcionalidadesAdmin();
+                    }else{
+                        funcionalidadesBasicas();
+                    }
                 }else{
                     System.out.println(new String(reply1) + ": Falha na autenticação"); // ?????? rever
                 }
@@ -84,18 +88,18 @@ public class Client {
     public void registar() throws InterruptedException {
         Thread t = new Thread(() -> {
             try{
-                admin = -1;
+                isSpecial = -1;
                 
-                while(admin == -1){
+                while(isSpecial == -1){
                     System.out.println("É um administrador? ");
                     System.out.println("1: Sim ");
                     System.out.println("2: Nao ");
                     System.out.println("Introduza o numero: ");
 
                     String option = stdin.readLine();
-                    if(option.equals("1")) admin = 1;
+                    if(option.equals("1")) isSpecial = 1;
                     else{
-                        if (option.equals("2")) admin = 0;
+                        if (option.equals("2")) isSpecial = 0;
                         else System.out.println("\033[1;31m" + "Opção incorreta!" + "\033[0m");
                     }
                 }
@@ -113,7 +117,11 @@ public class Client {
                 if(error==0){  //??????????????????????????????
                     System.out.println("\033[1;36m"+ new String(reply1) +"\033[0m"); 
                     user = name;
-                    funcionalidades();
+                    if(isSpecial == -1){
+                        funcionalidadesAdmin();
+                    }else{
+                        funcionalidadesBasicas();
+                    }
                 }else{
                     System.out.println(new String(reply1) + ": Registo nao efetuado"); // ?????? rever
                 }
@@ -126,13 +134,10 @@ public class Client {
         t.join();
     }
 
-    public void funcionalidades(){
+    public void funcionalidadesAdmin(){
         System.out.println("1: Inserir informacao sobre voos \n" 
                            + "2: Encerrar o dia \n"
-                           + "3: Reservar viagem \n"
-                           + "4: Cancelar reserva de uma viagem \n"
-                           + "5: Lista de voos \n"
-                           + "6: Logout \n"
+                           + "3: Logout \n"
                            + "Introduza o numero: ");
         String option = stdin.readLine();
         switch(option){
@@ -143,15 +148,62 @@ public class Client {
                 encerrarDia();
                 break;
             case "3":
+                logout();
+                break;
+        }
+    }
+
+    /**
+     * public void funcionalidadesAdmin(){
+    System.out.println("1: Inserir informacao sobre voos \n" 
+                       + "2: Encerrar o dia \n"
+                       + "3: Reservar viagem \n"
+                       + "4: Cancelar reserva de uma viagem \n"
+                       + "5: Lista de voos \n"
+                       + "6: Logout \n"
+                       + "Introduza o numero: ");
+    String option = stdin.readLine();
+    switch(option){
+        case "1":
+            insereInformacao();
+            break;
+        case "2":
+            encerrarDia();
+            break;
+        case "3":
+            reservaViagem();
+            break;
+        case "4":
+            cancelarReseva();
+            break;
+        case "5":
+            listaVoos();
+            break;
+        case "6":
+            logout();
+            break;
+    }
+}
+     */
+
+    public void funcionalidadesBasicas(){
+        System.out.println("1: Reservar viagem \n"
+                           + "2: Cancelar reserva de uma viagem \n"
+                           + "3: Lista de voos \n"
+                           + "4: Logout \n"
+                           + "Introduza o numero: ");
+        String option = stdin.readLine();
+        switch(option){
+            case "1":
                 reservaViagem();
                 break;
-            case "4":
+            case "2":
                 cancelarReseva();
                 break;
-            case "5":
+            case "3":
                 listaVoos();
                 break;
-            case "6":
+            case "4":
                 logout();
                 break;
         }
