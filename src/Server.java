@@ -4,24 +4,35 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.*;
 
 public class Server {
 
-    try {
-        ServerSocket ss = new ServerSocket(12345);
+    private static UserInfo info;
+    private static Map<String,TaggedConnection> connections = new HashMap<>();
 
-        while (true) {
-            System.out.println("À espera de pedidos de clientes...\n");
-            Socket s = ss.accept();
-            TaggedConnection c = new TaggedConnection(s);
-            //criação de uma thread de forma a tratar cada um dos clientes que querem fazer pedidos
-            Thread t = new Thread(new ServerWorker(socket));
-            t.start();
+    Map<String,User> credentials = Parser.parse();
+
+    public static void main(String[] args) throws IOException {
+        try {
+            ServerSocket ss = new ServerSocket(12345);
+            info = new UserInfo();
+
+            while (true) {
+                System.out.println("À espera de pedidos de clientes...\n");
+                Socket socket = ss.accept();
+                TaggedConnection c = new TaggedConnection(socket);
+                //criação de uma thread de forma a tratar cada um dos clientes que querem fazer pedidos
+                Thread t = new Thread(new ServerWorker(socket));
+                t.start();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }catch(IOException e){
-        e.printStackTrace();
     }
 
+    public Server() throws IOException {
+    }
 
 
     static class ServerWorker implements Runnable {
@@ -48,9 +59,3 @@ public class Server {
         }
     }
 }
-}
-
-
-
-
-

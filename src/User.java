@@ -6,7 +6,7 @@ public class User {
     private String username;
     private String password;
     private String name;
-    private int isSpecial; /** 0 -> user normal ; 1 -> administrador */
+    private int isSpecial; /** 0 -> user normal ; -1 -> administrador */
     ReentrantLock lock = new ReentrantLock();
 
     public User(String username, String password, String name, int isSpecial) {
@@ -16,14 +16,19 @@ public class User {
         this.isSpecial = isSpecial;
     }
 
+    public User(User user){
+        this.username = user.getUsername();
+        this.password = user.getPassword();
+        this.name = user.getName();
+        this.isSpecial = user.getSpecialUser();
+    }
+
     public String getUsername() {
         try{
             lock.lock();
             return this.username;
         }
-        finally {
-            lock.unlock();
-        }
+        finally { lock.unlock(); }
     }
 
     public void setUsername(String username) {
@@ -31,9 +36,7 @@ public class User {
             lock.lock();
             this.username = username;
         }
-        finally {
-            lock.unlock();
-        }
+        finally { lock.unlock(); }
     }
 
     public String getPassword() {
@@ -41,18 +44,15 @@ public class User {
             lock.lock();
             return this.password;
         }
-        finally {
-            lock.unlock();
-        }
+        finally { lock.unlock(); }
     }
 
     public void setPassword(String password){
-        try{
+        try {
             lock.lock();
             this.password = password;
-        finally {
-            lock.unlock();
         }
+        finally { lock.unlock(); }
     }
 
     public String getName() {
@@ -60,18 +60,15 @@ public class User {
             lock.lock();
             return this.name;
         }
-        finally {
-            lock.unlock();
-        }
+        finally { lock.unlock(); }
     }
 
     public void setName(String name){
-        try{
+        try {
             lock.lock();
             this.name = name;
-        finally {
-            lock.unlock();
         }
+        finally { lock.unlock(); }
     }
 
     public int getSpecialUser() {
@@ -82,10 +79,11 @@ public class User {
         finally { lock.unlock(); }
     }
 
-    public void setSpecialUser(String isSpecial){
-        try{
+    public void setSpecialUser(int isSpecial){
+        try {
             lock.lock();
             this.isSpecial = isSpecial;
+        }
         finally { lock.unlock(); }
     }
 

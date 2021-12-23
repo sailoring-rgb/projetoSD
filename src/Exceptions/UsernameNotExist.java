@@ -6,7 +6,8 @@ package Exceptions;
 */
 public class UsernameNotExist extends Exception {
 
-    public UserusernameNotExist(String e){
+    public UsernameNotExist(String e){
         super(e);
     }
+
 }

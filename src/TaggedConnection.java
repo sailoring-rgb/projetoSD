@@ -1,7 +1,6 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class TaggedConnection implements AutoCloseable{
@@ -35,9 +34,7 @@ public class TaggedConnection implements AutoCloseable{
             os.writeInt(tag);
             os.write(data);
             os.flush();
-        } finally {
-            wlock.unlock():
-        }
+        } finally { wlock.unlock(); }
     }
 
     public Frame receive() throws IOException{
@@ -49,9 +46,7 @@ public class TaggedConnection implements AutoCloseable{
             int n = this.is.readInt();
             data = new byte[n];
             this.is.readFully(data);
-        } finally {
-            rlock.unlock():
-        }
+        } finally { rlock.unlock(); }
         return new Frame(tag,data);
     }
 

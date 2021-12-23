@@ -1,9 +1,7 @@
 import java.net.Socket;
 
 import java.net.Socket;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class Client {
     private static String user;
@@ -20,11 +18,9 @@ public class Client {
         System.out.println("Adeus!");
     }
 
-    public static void menu() throws InterruptedException{
+    public static void menu() throws InterruptedException, IOException {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-
         String username = null;
-
         while(username == null){
             System.out.println(" Introduza a sua escolha: " 
                             + "1: Login \n"
@@ -35,18 +31,17 @@ public class Client {
                 case "1":
                     login();
                     break;
-            
                 case "2":
                     registar();
                     break;
-        
                 default:
                     break;
             }
         }
     }
 
-    public void login() throws InterruptedException{
+    public static void login() throws InterruptedException{
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         Thread t = new Thread(()-> {
             try{
                 System.out.println("----------Login----------"
@@ -85,7 +80,8 @@ public class Client {
         t.join();
     }
 
-    public void registar() throws InterruptedException {
+    public static void registar() throws InterruptedException {
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         Thread t = new Thread(() -> {
             try{
                 isSpecial = -1;
@@ -134,7 +130,8 @@ public class Client {
         t.join();
     }
 
-    public void funcionalidadesAdmin(){
+    public static void funcionalidadesAdmin() throws IOException {
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("1: Inserir informacao sobre voos \n" 
                            + "2: Encerrar o dia \n"
                            + "3: Logout \n"
@@ -142,13 +139,13 @@ public class Client {
         String option = stdin.readLine();
         switch(option){
             case "1":
-                insereInformacao();
+                //insereInformacao();
                 break;
             case "2":
-                encerrarDia();
+                //encerrarDia();
                 break;
             case "3":
-                logout();
+                //logout();
                 break;
         }
     }
@@ -186,7 +183,8 @@ public class Client {
 }
      */
 
-    public void funcionalidadesBasicas(){
+    public static void funcionalidadesBasicas() throws IOException {
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("1: Reservar viagem \n"
                            + "2: Cancelar reserva de uma viagem \n"
                            + "3: Lista de voos \n"
@@ -198,36 +196,39 @@ public class Client {
                 reservaViagem();
                 break;
             case "2":
-                cancelarReseva();
+                //cancelarReseva();
                 break;
             case "3":
                 listaVoos();
                 break;
             case "4":
-                logout();
+                //logout();
                 break;
         }
     }
 
-    public void reservaViagem(){
+    public static void reservaViagem(){
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         Thread t = new Thread(() -> {
             try{
                 System.out.println("Lista de voos (origem -> destino): ");
                 listaVoos();
                 System.out.println("Insira percurso completo: ");
-                String trip = stdin.readILine();
+                String trip = stdin.readLine();
                 System.out.println("Insira possível data de partida(DD-MM-AAAA): ");
                 String date1 = stdin.readLine();
                 System.out.println("Insira possível data de chegada(DD-MM-AAAA): ");
                 String date2 = stdin.readLine();
 
                 //calcular intervalo, reservar e devolver codigo de reserva
+            } catch (IOException e) {
+            e.printStackTrace();
             }
-        })
+        });
     }
 
-
     public void cancelarReserva(){
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         Thread t = new Thread(() -> {
             try{
                 System.out.println("Insira User Name: ");
@@ -236,31 +237,31 @@ public class Client {
                 String cod = stdin.readLine();
 
                 //cancelar reserva
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
         
     }
 
-    public void listaVoos(){
+    public static void listaVoos(){
         Thread t = new Thread(() -> {
-            try{
-                System.out.println("Lista de voos (origem -> destino): ");
+            System.out.println("Lista de voos (origem -> destino): ");
 
-                //apresentar lista
-            }
-        })
+            //apresentar lista
+        });
     }
 
     public static void main(String[] args) throws Exception{
         Socket socket = new Socket("localhost",12345);
-        multi = new Demultiplexer(new TaggedConnection(s));
+        multi = new Demultiplexer(new TaggedConnection(socket));
         warning = new Thread(() -> {
             try{
                 while(true){
                     byte[] reply = multi.receive(6);
                     System.out.println("\n\033[1;31m» " + new String(reply) + "\033[0m");
                 }
-            }catch (IOException | InterruptedException e){
+            } catch (IOException | InterruptedException e) {
 
             }
         });
