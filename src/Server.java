@@ -11,6 +11,7 @@ public class Server {
     private static UserInfo info;
     private static Map<String,TaggedConnection> connections = new HashMap<>();
 
+    // este mapa vai ser usado pelo server para verificar se as credenciais são válidas no login
     Map<String,User> credentials = Parser.parse();
 
     public static void main(String[] args) throws IOException {
