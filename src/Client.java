@@ -4,10 +4,10 @@ import java.net.Socket;
 import java.io.*;
 
 public class Client {
-    private static String user;
-    private static int isSpecial;
-    private static Demultiplexer multi;
-    private static Thread warning;
+    private String user;
+    private int isSpecial;
+    private Demultiplexer multi;
+    private Thread warning;
 
     public static void run() throws IOException, InterruptedException{
         System.out.println("Bem vindo!");
@@ -130,28 +130,8 @@ public class Client {
         t.join();
     }
 
-    public static void funcionalidadesAdmin() throws IOException {
-        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("1: Inserir informacao sobre voos \n" 
-                           + "2: Encerrar o dia \n"
-                           + "3: Logout \n"
-                           + "Introduza o numero: ");
-        String option = stdin.readLine();
-        switch(option){
-            case "1":
-                //insereInformacao();
-                break;
-            case "2":
-                //encerrarDia();
-                break;
-            case "3":
-                //logout();
-                break;
-        }
-    }
 
-    /**
-     * public void funcionalidadesAdmin(){
+public void funcionalidadesAdmin(){
     System.out.println("1: Inserir informacao sobre voos \n" 
                        + "2: Encerrar o dia \n"
                        + "3: Reservar viagem \n"
@@ -181,15 +161,14 @@ public class Client {
             break;
     }
 }
-     */
 
     public static void funcionalidadesBasicas() throws IOException {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("1: Reservar viagem \n"
-                           + "2: Cancelar reserva de uma viagem \n"
-                           + "3: Lista de voos \n"
-                           + "4: Logout \n"
-                           + "Introduza o numero: ");
+                         + "2: Cancelar reserva de uma viagem \n"
+                         + "3: Lista de voos \n"
+                         + "4: Logout \n"
+                         + "Introduza o numero: ");
         String option = stdin.readLine();
         switch(option){
             case "1":

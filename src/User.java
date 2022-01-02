@@ -7,13 +7,15 @@ public class User {
     private String password;
     private String name;
     private int isSpecial; /** 0 -> user normal ; -1 -> administrador */
+    private List<Viagem> viagens;
     ReentrantLock lock = new ReentrantLock();
 
-    public User(String username, String password, String name, int isSpecial) {
+    public User(String username, String password, String name, int isSpecial, List<Viagem> viagens) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.isSpecial = isSpecial;
+        this.viagens = viagens;
     }
 
     public User(User user){
@@ -21,6 +23,7 @@ public class User {
         this.password = user.getPassword();
         this.name = user.getName();
         this.isSpecial = user.getSpecialUser();
+        this.viagens = user.getViagem();
     }
 
     public String getUsername() {
@@ -83,6 +86,14 @@ public class User {
         try {
             lock.lock();
             this.isSpecial = isSpecial;
+        }
+        finally { lock.unlock(); }
+    }
+
+    public List<Viagem> getViagens() {
+        try{
+            lock.lock();
+            return new ArrayList<>(this.viagens);
         }
         finally { lock.unlock(); }
     }
