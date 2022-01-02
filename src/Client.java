@@ -194,12 +194,12 @@ public void funcionalidadesAdmin(){
                 listaVoos();
                 System.out.println("Insira percurso completo: ");
                 String trip = stdin.readLine();
-                System.out.println("Insira possível data de partida(DD-MM-AAAA): ");
+                ystem.out.println("Insira intervalo de data possíveis (DD-MM-AAAA;DD-MM-AAAA): ");
                 String date1 = stdin.readLine();
-                System.out.println("Insira possível data de chegada(DD-MM-AAAA): ");
-                String date2 = stdin.readLine();
 
                 //calcular intervalo, reservar e devolver codigo de reserva
+                //se tivermos com a lista de viagens existentes, o servidor colhe a data mais proxima dentro do intervalo 
+                //se não o servior calcula uma media do intervalo
             } catch (IOException e) {
             e.printStackTrace();
             }
