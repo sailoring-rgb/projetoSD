@@ -1,6 +1,7 @@
 import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class User {
     private String username;
@@ -10,20 +11,12 @@ public class User {
     private List<Viagem> viagens;
     ReentrantLock lock = new ReentrantLock();
 
-    public User(String username, String password, String name, boolean isSpecial) {
-        this.username = username;
-        this.password = password;
-        this.name = name;
-        this.isAdministrador = isSpecial;
-        this.viagens = viagens;
-    }
-
     public User(String username, String password, String name, boolean isSpecial, List<Viagem> viagens) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.isAdministrador = isSpecial;
-        this.viagens = viagens;
+        this.viagens = new ArrayList<>(viagens);
     }
 
     public User(User user){

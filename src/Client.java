@@ -10,32 +10,35 @@ public class Client {
     private static Thread warning;
 
     public static void run() throws IOException, InterruptedException{
-        System.out.print("\n\nBem vindo!\n\n");
+        System.out.print("\n\n\033[1;35mSeja Bem-vindo!\033[0m\n\n");
         warning.start();
         menu();
         warning.interrupt();
         multi.close();
-        System.out.print("\n\nAdeus!\n\n");
+        System.out.print("\n\n\033[1;35mAté à Próxima!\033[0m\n\n");
     }
 
     public static void menu() throws InterruptedException, IOException {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         String username = null;
         while(username == null){
-            System.out.print("1: Login\n"
+            System.out.print("---------------MENU---------------\n"
+                            + "1: Login\n"
                             + "2: Registar\n\n"
-                            + "Introduza a sua escolha: ");
+                            + "0: Sair\n"
+                            + "----------------------------------\n"
+                            + "Introduza a opção: ");
             String option = stdin.readLine();
-            System.out.println("\n\n");
-            switch (option) {
-                case "1":
-                    login();
-                    break;
-                case "2":
-                    register();
-                    break;
-                default:
-                    break;
+            System.out.println("\n");
+            if(option.equals("1"))
+                login();
+            else if (option.equals("2"))
+                register();
+            else if (option.equals("0"))
+                logout();
+            else{
+                System.out.println("\033[0;31mOpção incorreta!\033[0m");
+                System.out.println("\n\n");
             }
         }
     }
@@ -58,30 +61,27 @@ public class Client {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         Thread t = new Thread(()-> {
             try{
-                System.out.print("----------Login----------\n"
-                                + "Inserir username: ");
+                System.out.print("Inserir username: ");
                 String name = stdin.readLine();
                 System.out.print("Inserir palavra-passe: ");
                 String password = stdin.readLine();
-                System.out.print("------------------------\n\n");
 
                 multi.send(1, (name+" "+password+" ").getBytes());
 
                 byte[] reply = multi.receive(1);
                 int error =  Integer.parseInt(new String(reply));
-                byte[] reply1 = multi.receive(1);   // ?????????????????????
+                byte[] reply1 = multi.receive(1);
+                System.out.println("\n");
                 if(error==0){
-                    String[] tokens = new String(reply1).split(":");  
-                    System.out.println(tokens[0]);
-                    System.out.println(tokens[1]);
+                    System.out.print(new String(reply1) + "\n\n");
                     user = name;
-                    if(isAdmin == true){
+                    if(isAdmin){
                         funcionalidadesAdmin();
                     }else{
                         funcionalidadesBasicas();
                     }
                 }else{
-                    System.out.println(new String(reply1) + ": Falha na autenticação");
+                    System.out.println("\n\033[0;31m" + new String(reply1) + ": Falha na autenticação" + "\033[0m");
                 }
             }
             catch (NullPointerException | IOException | InterruptedException e) {
@@ -99,23 +99,20 @@ public class Client {
                 int controlo = -1;
                 
                 while(controlo == -1){
-                    System.out.print("----------Registar----------\n"
-                                     + "É um administrador?\n"
-                                     + "1: Sim\n"
-                                     + "2: Nao\n"
-                                     + "\nIntroduza o numero: ");
+                    System.out.print("É um administrador?\n");
+                    System.out.print("1: Sim\n");
+                    System.out.print("2: Não\n\n");
+                    System.out.print("Introduza o número: ");
                     String option = stdin.readLine();
                     if(option.equals("1")){
                         isAdmin = true;
                         controlo = 0;
                     }
-                    else{
-                        if (option.equals("2")){
+                    else if (option.equals("2")){
                             isAdmin = false;
                             controlo = 0;
                         }
-                        else System.out.println("Opção incorreta!");
-                    }
+                    else System.out.print("\n\033[0;31mOpção incorreta!\033[0m\n\n");
                 }
 
                 System.out.print("\nInserir username: ");
@@ -124,23 +121,23 @@ public class Client {
                 String password = stdin.readLine();
                 System.out.print("Inserir nome: ");
                 String name = stdin.readLine();
-                System.out.print("----------------------------\n\n\n");
 
                 multi.send(2, (username+" "+password+" "+name+" "+isAdmin+" ").getBytes());
 
                 byte[] reply = multi.receive(2);
                 int error =  Integer.parseInt(new String(reply));
                 byte[] reply1 = multi.receive(2);
+                System.out.println("\n");
                 if(error==0){
-                    System.out.println(new String(reply1));
+                    System.out.println(new String(reply1) + "\n\n");
                     user = username;
-                    if(isAdmin == true){
+                    if(isAdmin){
                         funcionalidadesAdmin();
                     }else{
                         funcionalidadesBasicas();
                     }
                 }else{
-                    System.out.println(new String(reply1) + ": Registo não efetuado!!");
+                    System.out.print("\033[0;31m" + new String(reply1) + ": Registo não efetuado!!" + "\n\n\033[0m");
                 }
             }
             catch(NullPointerException | IOException | InterruptedException e){
@@ -151,60 +148,54 @@ public class Client {
         t.join();
     }
 
-public static void funcionalidadesAdmin() throws IOException {
-    BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-    System.out.println("1: Inserir informacao sobre voos \n" 
+    public static void funcionalidadesAdmin() throws IOException, InterruptedException {
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("-----------------MENU-----------------\n"
+                       + "1: Inserir informacao sobre voos \n"
                        + "2: Encerrar o dia \n"
                        + "3: Reservar viagem \n"
                        + "4: Cancelar reserva de uma viagem \n"
-                       + "5: Lista de voos \n"
-                       + "6: Logout \n"
-                       + "Introduza o numero: ");
-    String option = stdin.readLine();
-    switch(option){
-        case "1":
-            //insereInformacao();
-            break;
-        case "2":
-            //encerrarDia();
-            break;
-        case "3":
-            reservaViagem();
-            break;
-        case "4":
-            //cancelarReseva();
-            break;
-        case "5":
-            listaVoos();
-            break;
-        case "6":
-            //logout();
-            break;
-    }
-}
-
-    public static void funcionalidadesBasicas() throws IOException {
-        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("1: Reservar viagem \n"
-                         + "2: Cancelar reserva de uma viagem \n"
-                         + "3: Lista de voos \n"
-                         + "4: Logout \n"
-                         + "Introduza o numero: ");
+                       + "5: Lista de voos \n\n"
+                       + "0: Logout \n"
+                       + "--------------------------------------\n");
+        System.out.print("Introduza a opção: ");
         String option = stdin.readLine();
-        switch(option){
-            case "1":
-                reservaViagem();
-                break;
-            case "2":
-                //cancelarReseva();
-                break;
-            case "3":
-                listaVoos();
-                break;
-            case "4":
-                //logout();
-                break;
-        }
+        if(option.equals("1"));
+            //insereInformacao();
+        else if (option.equals("2"));
+            //encerrarDia();
+        else if (option.equals("3"))
+            reservaViagem();
+        else if (option.equals("4"));
+            //cancelarReseva();
+        else if (option.equals("5"))
+            listaVoos();
+        else if (option.equals("0"))
+            logout();
+        else System.out.println("\033[0;31mOpção incorreta!\033[0m");
+        System.out.println("\n\n");
+    }
+
+    public static void funcionalidadesBasicas() throws IOException, InterruptedException {
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("-----------------MENU-----------------\n"
+                         + "1: Reservar viagem \n"
+                         + "2: Cancelar reserva de uma viagem \n"
+                         + "3: Lista de voos\n\n"
+                         + "0: Logout \n"
+                         + "--------------------------------------\n\n"
+                         + "Introduza a opção: ");
+        String option = stdin.readLine();
+        if(option.equals("1"))
+            reservaViagem();
+        else if (option.equals("2"));
+            //cancelarReseva();
+        else if (option.equals("3"))
+            listaVoos();
+        else if (option.equals("0"))
+            logout();
+        else System.out.println("\033[0;31mOpção incorreta!\033[0m");
+        System.out.println("\n\n");
     }
 
     public static void reservaViagem(){
@@ -259,7 +250,7 @@ public static void funcionalidadesAdmin() throws IOException {
             try{
                 while(true){
                     byte[] reply = multi.receive(6);
-                    System.out.println(new String(reply));
+                    System.out.print(new String(reply) + "\n\n");
                 }
             } catch (IOException | InterruptedException e) {}
         });

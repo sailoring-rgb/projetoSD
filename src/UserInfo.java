@@ -17,20 +17,16 @@ public class UserInfo {
     public UserInfo(Map<String,User> credentials) {
         this.credentials = credentials.entrySet().stream().collect(Collectors.toMap(e->e.getKey(),e-> e.getValue().clone()));
     }
-/*
-    public User userParse(String userInput) throws IOException {
-        String[] tokens = userInput.split(";");
-        return new User(tokens[0],tokens[1],tokens[2],Integer.parseInt(tokens[3]));
-    }
-*/
+
     public boolean registerUser(String username, String password, String name, Boolean isAdmin) throws UsernameAlreadyExists {
         try {
             lock.lock();
             if (credentials.containsKey(username)){
-                throw new UsernameAlreadyExists("Este username não está disponível.");
+                throw new UsernameAlreadyExists("Este username não está disponível");
             }
             else{
-                User user = new User(username,password,name,isAdmin);
+                List<Viagem> historico = new ArrayList<>();
+                User user = new User(username,password,name,isAdmin,historico);
                 credentials.put(username,user.clone());
                 return true;
             }
@@ -49,9 +45,9 @@ public class UserInfo {
     public boolean validateUser(String username, String password) throws UsernameNotExist, WrongPassword {
         try {
             lock.lock();
-            if (!credentials.containsKey(username)) throw new UsernameNotExist("Este username não existe.");
+            if (!credentials.containsKey(username)) throw new UsernameNotExist("Este username não existe");
             String userPassword = credentials.get(username).getPassword();
-            if (!userPassword.equals(password)) throw new WrongPassword("Esta password está incorreta.");
+            if (!userPassword.equals(password)) throw new WrongPassword("Esta password está incorreta");
             return true;
         }
         finally { lock.unlock(); }
@@ -60,7 +56,7 @@ public class UserInfo {
     public boolean isAdministrador(String username){
         try{
             lock.lock();
-            return credentials.get(username).getIsAdministrador() == true;
+            return credentials.get(username).getIsAdministrador();
         } finally { lock.unlock(); }
     }
 

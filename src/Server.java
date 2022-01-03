@@ -20,7 +20,6 @@ public class Server {
         info = new UserInfo();
 
         while(true) {
-            System.out.println("À espera de pedidos de clientes...\n");
             Socket s = ss.accept();
             TaggedConnection c = new TaggedConnection(s);
 
@@ -29,13 +28,12 @@ public class Server {
                     for (;;) {
                         int cond = 0;
                         TaggedConnection.Frame frame = c.receive();
-                        int tag = frame.tag;
                         String data = new String(frame.data);
                         try {
                             if (frame.tag == 1) {
                                 String[] tokens = data.split(" ");
                                 if (info.validateUser(tokens[0],tokens[1])) {
-                                    System.out.print("A validar as credenciais...\n");
+                                    System.out.print("A validar as credenciais...\n\n");
                                     connections.put(tokens[0],c);
                                     c.send(frame.tag, String.valueOf(cond).getBytes());
                                     c.send(frame.tag, ("Login efetuado com sucesso!!").getBytes());
@@ -45,7 +43,7 @@ public class Server {
                             else if (frame.tag == 2) {
                                 String[] tokens = data.split(" ");
                                 if(info.registerUser(tokens[0],tokens[1],tokens[2],Boolean.parseBoolean(tokens[3]))) {
-                                    System.out.print("A registar o novo cliente...\n");
+                                    System.out.print("A registar o novo cliente...\n\n");
                                     connections.put(tokens[0], c);
                                     c.send(frame.tag, String.valueOf(cond).getBytes());
                                     c.send(frame.tag, "Registo efetuado com sucesso!!".getBytes());
