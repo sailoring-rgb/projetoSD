@@ -1,14 +1,21 @@
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Viagem {
     private String origem;
     private String destino;
     private LocalDateTime partida;
     private LocalDateTime chegada;
+    ReentrantLock lock = new ReentrantLock();
 
     public Viagem(){
         this.origem = "";
         this.destino = "";
-        this.partida = LocaDateTime.now();
-        this.destino = LocalDateTime.now();
+        this.partida = LocalDateTime.now();
+        this.chegada = LocalDateTime.now();
     }
 
     public Viagem(String origem, String destino, LocalDateTime partida, LocalDateTime chegada){
@@ -18,7 +25,7 @@ public class Viagem {
         this.chegada = chegada;
     }
 
-    public viagem(viagem viagem){
+    public Viagem(Viagem viagem){
         this.origem = viagem.getOrigem();
         this.destino = viagem.getDestino();
         this.partida = viagem.getPartida();
@@ -89,7 +96,7 @@ public class Viagem {
         finally { lock.unlock(); }
     }
 
-    public User clone(){
+    public Viagem clone(){
         return new Viagem(this);
     }
 
@@ -98,8 +105,8 @@ public class Viagem {
         StringBuilder builder = new StringBuilder();
         builder.append(this.origem).append(";");
         builder.append(this.destino).append(";");
-        builder.append(this.partida.format(dataFormatada)).append(";");
-        builder.append(this.chegada.format(dataFormatada)).append(";");
+        builder.append(this.partida.format(dataformatada)).append(";");
+        builder.append(this.chegada.format(dataformatada)).append(";");
         return builder.toString();
     }
 }

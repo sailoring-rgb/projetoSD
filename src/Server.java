@@ -1,3 +1,7 @@
+import Exceptions.UsernameAlreadyExists;
+import Exceptions.UsernameNotExist;
+import Exceptions.WrongPassword;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,10 +15,58 @@ public class Server {
     private static UserInfo info;
     private static Map<String,TaggedConnection> connections = new HashMap<>();
 
-    // este mapa vai ser usado pelo server para verificar se as credenciais são válidas no login
-    Map<String,User> credentials = Parser.parse();
-
     public static void main(String[] args) throws IOException {
+        ServerSocket ss = new ServerSocket(12343);
+        info = new UserInfo();
+
+        while(true) {
+            System.out.println("À espera de pedidos de clientes...\n");
+            Socket s = ss.accept();
+            TaggedConnection c = new TaggedConnection(s);
+
+            Runnable worker = () -> {
+                try {
+                    for (;;) {
+                        int cond = 0;
+                        TaggedConnection.Frame frame = c.receive();
+                        int tag = frame.tag;
+                        String data = new String(frame.data);
+                        try {
+                            if (frame.tag == 1) {
+                                String[] tokens = data.split(" ");
+                                if (info.validateUser(tokens[0],tokens[1])) {
+                                    System.out.print("A validar as credenciais...\n");
+                                    connections.put(tokens[0],c);
+                                    c.send(frame.tag, String.valueOf(cond).getBytes());
+                                    c.send(frame.tag, ("Login efetuado com sucesso!!").getBytes());
+                                }
+                            }
+
+                            else if (frame.tag == 2) {
+                                String[] tokens = data.split(" ");
+                                if(info.registerUser(tokens[0],tokens[1],tokens[2],Boolean.parseBoolean(tokens[3]))) {
+                                    System.out.print("A registar o novo cliente...\n");
+                                    connections.put(tokens[0], c);
+                                    c.send(frame.tag, String.valueOf(cond).getBytes());
+                                    c.send(frame.tag, "Registo efetuado com sucesso!!".getBytes());
+                                }
+                            }
+
+                        } catch ( UsernameAlreadyExists | UsernameNotExist | WrongPassword e) {
+                            cond = 1;
+                            c.send(frame.tag, String.valueOf(cond).getBytes());
+                            c.send(frame.tag, e.getMessage().getBytes());
+                        }
+                    }
+                } catch (IOException e) {
+                    e.getMessage();
+                }
+            };
+
+            new Thread(worker).start();
+        }
+    }
+        /*
         try {
             ServerSocket ss = new ServerSocket(12345);
             info = new UserInfo();
@@ -59,4 +111,6 @@ public class Server {
 
         }
     }
+    */
+
 }

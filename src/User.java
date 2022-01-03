@@ -6,15 +6,23 @@ public class User {
     private String username;
     private String password;
     private String name;
-    private int isSpecial; /** 0 -> user normal ; -1 -> administrador */
+    private boolean isAdministrador; /** false -> user normal ; true -> administrador */
     private List<Viagem> viagens;
     ReentrantLock lock = new ReentrantLock();
 
-    public User(String username, String password, String name, int isSpecial, List<Viagem> viagens) {
+    public User(String username, String password, String name, boolean isSpecial) {
         this.username = username;
         this.password = password;
         this.name = name;
-        this.isSpecial = isSpecial;
+        this.isAdministrador = isSpecial;
+        this.viagens = viagens;
+    }
+
+    public User(String username, String password, String name, boolean isSpecial, List<Viagem> viagens) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.isAdministrador = isSpecial;
         this.viagens = viagens;
     }
 
@@ -22,8 +30,8 @@ public class User {
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.name = user.getName();
-        this.isSpecial = user.getSpecialUser();
-        this.viagens = user.getViagem();
+        this.isAdministrador = user.getIsAdministrador();
+        this.viagens = user.getViagens();
     }
 
     public String getUsername() {
@@ -74,18 +82,18 @@ public class User {
         finally { lock.unlock(); }
     }
 
-    public int getSpecialUser() {
+    public boolean getIsAdministrador() {
         try{
             lock.lock();
-            return this.isSpecial;
+            return this.isAdministrador;
         }
         finally { lock.unlock(); }
     }
 
-    public void setSpecialUser(int isSpecial){
+    public void setIsAdministrador(boolean isSpecial){
         try {
             lock.lock();
-            this.isSpecial = isSpecial;
+            this.isAdministrador = isSpecial;
         }
         finally { lock.unlock(); }
     }

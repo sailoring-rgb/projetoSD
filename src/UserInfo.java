@@ -23,21 +23,17 @@ public class UserInfo {
         return new User(tokens[0],tokens[1],tokens[2],Integer.parseInt(tokens[3]));
     }
 */
-    public String registerNewUser(User user) throws UsernameAlreadyExists {
-        // User user = userParse(userInput);
-        addNewUser(user.clone());
-        try {
-            user.lock.lock();
-            return user.getUsername();
-        }
-        finally { user.lock.unlock(); }
-    }
-
-    public void addNewUser(User user) throws UsernameAlreadyExists {
+    public boolean registerUser(String username, String password, String name, Boolean isAdmin) throws UsernameAlreadyExists {
         try {
             lock.lock();
-            if (credentials.containsKey(user.getUsername())) throw new UsernameAlreadyExists("Este username não está disponível.");
-            credentials.put(user.getUsername(),user.clone());
+            if (credentials.containsKey(username)){
+                throw new UsernameAlreadyExists("Este username não está disponível.");
+            }
+            else{
+                User user = new User(username,password,name,isAdmin);
+                credentials.put(username,user.clone());
+                return true;
+            }
         }
         finally { lock.unlock(); }
     }
@@ -64,7 +60,7 @@ public class UserInfo {
     public boolean isAdministrador(String username){
         try{
             lock.lock();
-            return credentials.get(username).getSpecialUser() == -1;
+            return credentials.get(username).getIsAdministrador() == true;
         } finally { lock.unlock(); }
     }
 
