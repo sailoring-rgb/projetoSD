@@ -4,10 +4,10 @@ import java.net.Socket;
 import java.io.*;
 
 public class Client {
-    private String user;
-    private int isSpecial;
-    private Demultiplexer multi;
-    private Thread warning;
+    private static String user;
+    private static int isSpecial;
+    private static Demultiplexer multi;
+    private static Thread warning;
 
     public static void run() throws IOException, InterruptedException{
         System.out.println("Bem vindo!");
@@ -131,7 +131,7 @@ public class Client {
     }
 
 
-public void funcionalidadesAdmin(){
+public static void funcionalidadesAdmin(){
     System.out.println("1: Inserir informacao sobre voos \n" 
                        + "2: Encerrar o dia \n"
                        + "3: Reservar viagem \n"
