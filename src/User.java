@@ -1,4 +1,9 @@
+import Exceptions.UsernameNotExist;
+import Exceptions.WrongPassword;
+
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -8,15 +13,15 @@ public class User {
     private String password;
     private String name;
     private boolean isAdministrador; /** false -> user normal ; true -> administrador */
-    private List<Viagem> viagens;
+    private Map<Integer,Viagem> historic; // código de reserva; viagem
     ReentrantLock lock = new ReentrantLock();
 
-    public User(String username, String password, String name, boolean isSpecial, List<Viagem> viagens) {
+    public User(String username, String password, String name, boolean isSpecial, Map<Integer,Viagem> historic) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.isAdministrador = isSpecial;
-        this.viagens = new ArrayList<>(viagens);
+        this.historic = new HashMap<>(historic);
     }
 
     public User(User user){
@@ -24,21 +29,13 @@ public class User {
         this.password = user.getPassword();
         this.name = user.getName();
         this.isAdministrador = user.getIsAdministrador();
-        this.viagens = user.getViagens();
+        this.historic = user.getHistoric();
     }
 
     public String getUsername() {
         try{
             lock.lock();
             return this.username;
-        }
-        finally { lock.unlock(); }
-    }
-
-    public void setUsername(String username) {
-        try {
-            lock.lock();
-            this.username = username;
         }
         finally { lock.unlock(); }
     }
@@ -51,26 +48,10 @@ public class User {
         finally { lock.unlock(); }
     }
 
-    public void setPassword(String password){
-        try {
-            lock.lock();
-            this.password = password;
-        }
-        finally { lock.unlock(); }
-    }
-
     public String getName() {
         try{
             lock.lock();
             return this.name;
-        }
-        finally { lock.unlock(); }
-    }
-
-    public void setName(String name){
-        try {
-            lock.lock();
-            this.name = name;
         }
         finally { lock.unlock(); }
     }
@@ -83,18 +64,10 @@ public class User {
         finally { lock.unlock(); }
     }
 
-    public void setIsAdministrador(boolean isSpecial){
-        try {
-            lock.lock();
-            this.isAdministrador = isSpecial;
-        }
-        finally { lock.unlock(); }
-    }
-
-    public List<Viagem> getViagens() {
+    public Map<Integer,Viagem> getHistoric() {
         try{
             lock.lock();
-            return new ArrayList<>(this.viagens);
+            return new HashMap<>(this.historic);
         }
         finally { lock.unlock(); }
     }
@@ -108,6 +81,7 @@ public class User {
         builder.append(this.username).append(";");
         builder.append(this.password).append(";");
         builder.append(this.name).append(";");
+        builder.append(this.historic.toString()).append(";");
         return builder.toString();
     }
 }

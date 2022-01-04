@@ -1,3 +1,4 @@
+import Exceptions.ClosedDate;
 import Exceptions.UsernameAlreadyExists;
 import Exceptions.UsernameNotExist;
 import Exceptions.WrongPassword;
@@ -39,7 +40,6 @@ public class Server {
                                     c.send(frame.tag, ("Login efetuado com sucesso!!").getBytes());
                                 }
                             }
-
                             else if (frame.tag == 2) {
                                 String[] tokens = data.split(" ");
                                 if(info.registerUser(tokens[0],tokens[1],tokens[2],Boolean.parseBoolean(tokens[3]))) {
@@ -49,8 +49,14 @@ public class Server {
                                     c.send(frame.tag, "Registo efetuado com sucesso!!".getBytes());
                                 }
                             }
-
-                        } catch ( UsernameAlreadyExists | UsernameNotExist | WrongPassword e) {
+                            else if (frame.tag == 3) {
+                                String[] tokens = data.split(" ");
+                                System.out.print("A reservar viagem...\n\n");
+                                info.addReservation(tokens[1],tokens[2]);
+                                c.send(frame.tag,String.valueOf(cond).getBytes());
+                                c.send(frame.tag,"Reserva efetuada com sucesso!!".getBytes());
+                            }
+                        } catch ( UsernameAlreadyExists | UsernameNotExist | WrongPassword | ClosedDate e) {
                             cond = 1;
                             c.send(frame.tag, String.valueOf(cond).getBytes());
                             c.send(frame.tag, e.getMessage().getBytes());

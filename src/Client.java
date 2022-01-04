@@ -75,17 +75,13 @@ public class Client {
                 if(error==0){
                     System.out.print(new String(reply1) + "\n\n");
                     user = name;
-                    if(isAdmin){
-                        funcionalidadesAdmin();
-                    }else{
-                        funcionalidadesBasicas();
-                    }
-                }else{
+                    if(isAdmin) funcionalidadesAdmin();
+                    else funcionalidadesBasicas();
+                }else
                     System.out.println("\n\033[0;31m" + new String(reply1) + ": Falha na autenticação" + "\033[0m");
-                }
             }
             catch (NullPointerException | IOException | InterruptedException e) {
-                //menu.printExcecao(e.getMessage());
+                System.out.print(e.getMessage() + "\n\n");
             }
         });
         t.start();
@@ -131,17 +127,14 @@ public class Client {
                 if(error==0){
                     System.out.println(new String(reply1) + "\n\n");
                     user = username;
-                    if(isAdmin){
-                        funcionalidadesAdmin();
-                    }else{
-                        funcionalidadesBasicas();
-                    }
+                    if(isAdmin) funcionalidadesAdmin();
+                    else funcionalidadesBasicas();
                 }else{
                     System.out.print("\033[0;31m" + new String(reply1) + ": Registo não efetuado!!" + "\n\n\033[0m");
                 }
             }
-            catch(NullPointerException | IOException | InterruptedException e){
-                //menu.printExcecao(e.getMessage());
+            catch (NullPointerException | IOException | InterruptedException e) {
+                System.out.print(e.getMessage() + "\n\n");
             }
         });
         t.start();
@@ -198,24 +191,32 @@ public class Client {
         System.out.println("\n\n");
     }
 
-    public static void reservaViagem(){
+    public static void reservaViagem() throws InterruptedException {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         Thread t = new Thread(() -> {
-            try{
-                System.out.println("Lista de voos (origem -> destino): ");
-                listaVoos();
-                System.out.println("Insira percurso completo: ");
+            try {
+                //System.out.println("Lista de voos (origem -> destino): ");
+                //listaVoos();
+                System.out.print("Insira percurso completo (A->B): ");
                 String trip = stdin.readLine();
-                System.out.println("Insira intervalo de data possíveis (DD-MM-AAAA;DD-MM-AAAA): ");
-                String date1 = stdin.readLine();
+                System.out.print("Insira intervalo de data possíveis (DD-MM-AAAA;DD-MM-AAAA): ");
+                String date = stdin.readLine();
 
-                //calcular intervalo, reservar e devolver codigo de reserva
-                //se tivermos com a lista de viagens existentes, o servidor colhe a data mais proxima dentro do intervalo
-                //se não o servior calcula uma media do intervalo
-            } catch (IOException e) {
-            e.printStackTrace();
+                multi.send(3, (user+" "+trip+" "+date+" ").getBytes());
+
+                byte[] reply = multi.receive(3);
+                int error = Integer.parseInt(new String(reply));
+                byte[] reply1 = multi.receive(3);
+                if (error == 0) System.out.println("\033[1;36m" + new String(reply1) + "\033[0m");
+                else System.out.print("\033[0;31m" + new String(reply1) + ": Reserva não efetuada!!" + "\n\n\033[0m");
+                System.out.println("\n");
+            }
+            catch (NullPointerException | IOException | InterruptedException e) {
+                    System.out.print(e.getMessage() + "\n\n");
             }
         });
+        t.start();
+        t.join();
     }
 
     public void cancelarReserva(){

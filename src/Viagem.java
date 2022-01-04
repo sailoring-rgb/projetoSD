@@ -1,97 +1,75 @@
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Viagem {
-    private String origem;
-    private String destino;
-    private LocalDateTime partida;
-    private LocalDateTime chegada;
+    private String origin;
+    private String destiny;
+    private LocalDateTime departure;
+    //private LocalDateTime arrival;
+    private int capacity;
     ReentrantLock lock = new ReentrantLock();
 
-    public Viagem(){
-        this.origem = "";
-        this.destino = "";
-        this.partida = LocalDateTime.now();
-        this.chegada = LocalDateTime.now();
-    }
-
-    public Viagem(String origem, String destino, LocalDateTime partida, LocalDateTime chegada){
-        this.origem = origem;
-        this.destino = destino;
-        this.partida = partida;
-        this.chegada = chegada;
+    public Viagem(String origin, String destiny, LocalDateTime departure){
+        this.origin = origin;
+        this.destiny = destiny;
+        this.departure = departure;
+        this.capacity = 400;
+        //this.arrival = arrival;
     }
 
     public Viagem(Viagem viagem){
-        this.origem = viagem.getOrigem();
-        this.destino = viagem.getDestino();
-        this.partida = viagem.getPartida();
-        this.chegada = viagem.getChegada();
+        this.origin = viagem.getOrigin();
+        this.destiny = viagem.getDestiny();
+        this.departure = viagem.getDeparture();
+        //this.arrival = viagem.getArrival();
+        this.capacity = viagem.getCapacity();
     }
 
-    public String getOrigem() {
+    public String getOrigin() {
         try{
             lock.lock();
-            return this.origem;
+            return this.origin;
         }
         finally { lock.unlock(); }
     }
 
-    public void setOrigem(String origem) {
-        try {
-            lock.lock();
-            this.origem = origem;
-        }
-        finally { lock.unlock(); }
-    }
-
-    public String getDestino() {
+    public String getDestiny() {
         try{
             lock.lock();
-            return this.destino;
+            return this.destiny;
         }
         finally { lock.unlock(); }
     }
 
-    public void setDestino(String destino) {
-        try {
-            lock.lock();
-            this.destino = destino;
-        }
-        finally { lock.unlock(); }
-    }
-
-    public LocalDateTime getPartida() {
+    public LocalDateTime getDeparture() {
         try{
             lock.lock();
-            return this.partida;
+            return this.departure;
         }
         finally { lock.unlock(); }
     }
-
-    public void setPartida(LocalDateTime partida) {
-        try {
-            lock.lock();
-            this.partida = partida;
-        }
-        finally { lock.unlock(); }
-    }
-
-    public LocalDateTime getChegada() {
+/*
+    public LocalDateTime getArrival() {
         try{
             lock.lock();
-            return this.chegada;
+            return this.arrival;
+        }
+        finally { lock.unlock(); }
+    }
+*/
+    public int getCapacity(){
+        try{
+            lock.lock();
+            return this.capacity;
         }
         finally { lock.unlock(); }
     }
 
-    public void setChegada(LocalDateTime chegada) {
-        try {
+    public void setCapacity(int capacity){
+        try{
             lock.lock();
-            this.chegada = chegada;
+            this.capacity = capacity;
         }
         finally { lock.unlock(); }
     }
@@ -103,10 +81,10 @@ public class Viagem {
     public String toString () {
         DateTimeFormatter dataformatada = DateTimeFormatter.ofPattern("dd-mm-yyyy");
         StringBuilder builder = new StringBuilder();
-        builder.append(this.origem).append(";");
-        builder.append(this.destino).append(";");
-        builder.append(this.partida.format(dataformatada)).append(";");
-        builder.append(this.chegada.format(dataformatada)).append(";");
+        builder.append(this.origin).append(";");
+        builder.append(this.destiny).append(";");
+        builder.append(this.departure.format(dataformatada)).append(";");
+        //builder.append(this.arrival.format(dataformatada)).append(";");
         return builder.toString();
     }
 }
