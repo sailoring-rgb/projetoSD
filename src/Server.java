@@ -1,7 +1,4 @@
-import Exceptions.ClosedDate;
-import Exceptions.UsernameAlreadyExists;
-import Exceptions.UsernameNotExist;
-import Exceptions.WrongPassword;
+import Exceptions.*;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -49,17 +46,18 @@ public class Server {
                             else if (frame.tag == 3) {
                                 String[] tokens = data.split(" ");
                                 System.out.print("A reservar viagem...\n\n");
-                                info.addReservation(tokens[0],tokens[1]);
+                                int codigo = info.makeReservation(tokens[0],tokens[1]);
                                 c.send(frame.tag,String.valueOf(cond).getBytes());
-                                c.send(frame.tag,"Reserva efetuada com sucesso!!".getBytes());
+                                c.send(frame.tag,("Reserva efetuada com sucesso!!: Código "+codigo).getBytes());
                             }
-                            else if (frame.tag == 4){
+                            else if (frame.tag == 4) {
                                 String[] tokens = data.split(" ");
-                                System.out.println("A cancelar reserva de viagem...");
-                                info.cancelarReserva(tokens[0],tokens[1]);
-                                c.send(frame.tag,"Reserva cancelada!");
-                             }
-                        } catch ( UsernameAlreadyExists | UsernameNotExist | WrongPassword | ClosedDate e) {
+                                System.out.print("A cancelar reserva...\n\n");
+                                info.cancelReservation(tokens[0]);
+                                c.send(frame.tag,String.valueOf(cond).getBytes());
+                                c.send(frame.tag,"Cancelamento efetuado com sucesso!!".getBytes());
+                            }
+                        } catch ( UsernameAlreadyExists | UsernameNotExist | WrongPassword | ClosedDate | CodeNotExist e) {
                             cond = 1;
                             c.send(frame.tag, String.valueOf(cond).getBytes());
                             c.send(frame.tag, e.getMessage().getBytes());

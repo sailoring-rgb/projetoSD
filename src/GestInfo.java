@@ -1,11 +1,8 @@
 import Exceptions.*;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.stream.Collectors;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -22,11 +19,12 @@ public class GestInfo {
         this.flights = new ArrayList<>();
     }
 
-    public GestInfo(Map<String,User> credentials, List<Date> closedDates, List<Viagem> flights) {
-        this.user = "";
-        this.credentials = credentials.entrySet().stream().collect(Collectors.toMap(e->e.getKey(),e-> e.getValue().clone()));
-        this.closedDates = new ArrayList<>(closedDates);
-        this.flights = new ArrayList<>(flights);
+    public User getUser(String username){
+        try {
+            lock.lock();
+            return credentials.get(username);
+        }
+        finally { lock.unlock(); }
     }
 
     public boolean registerUser(String username, String password, String name, Boolean isAdmin) throws UsernameAlreadyExists {
@@ -34,8 +32,7 @@ public class GestInfo {
             lock.lock();
             if (credentials.containsKey(username)){
                 throw new UsernameAlreadyExists("Este username não está disponível");
-            }
-            else{
+            } else{
                 Map<Integer,Viagem> historic = new HashMap<>();
                 User user = new User(username,password,name,isAdmin,historic);
                 this.user = username;
@@ -44,14 +41,6 @@ public class GestInfo {
             }
         }
         finally { lock.unlock(); }
-    }
-
-    public void removeUser(String username){
-        try{
-            lock.lock();
-            credentials.remove(username);
-        }
-        finally{ lock.unlock(); }
     }
 
     public boolean validateUser(String username, String password) throws UsernameNotExist, WrongPassword {
@@ -66,14 +55,7 @@ public class GestInfo {
         finally { lock.unlock(); }
     }
 
-    public boolean isAdministrador(String username){
-        try{
-            lock.lock();
-            return credentials.get(username).getIsAdministrador();
-        } finally { lock.unlock(); }
-    }
-
-    public void addReservation(String route, String dates) throws ClosedDate{
+    public int makeReservation(String route, String dates) throws ClosedDate{
         try {
             lock.lock();
             String[] tokens1 = route.split("->");
@@ -89,13 +71,12 @@ public class GestInfo {
             // FALTA IMPLEMENTAR A QUESTÃO DAS ESCALAS
             for (Viagem v : this.flights) {
                 if (v.getOrigin().equals(flight.getOrigin()) && v.getDestiny().equals(flight.getDestiny()) && v.getDeparture().equals(flight.getDeparture())) {
-                    v.setCapacity(v.getCapacity() - 1);
-                    this.getUser(user).getHistoric().put(this.getUser(user).getHistoric().size() + 1, v.clone());
+                    flight.setCapacity(v.getCapacity()-1);
                     break;
                 }
             }
             this.flights.add(flight);
-            this.getUser(user).getHistoric().put(this.getUser(user).getHistoric().size() + 1, flight.clone());
+            return this.getUser(user).addHistoric(flight);
         } finally { lock.unlock(); }
     }
 
@@ -113,11 +94,15 @@ public class GestInfo {
         }
     }
 
-    public User getUser(String username){
+    public void cancelReservation(String codString) throws CodeNotExist, ClosedDate {
         try {
             lock.lock();
-            return credentials.get(username);
-        }
-        finally { lock.unlock(); }
+            int codigo = Integer.parseInt(codString);
+            if (!this.getUser(this.user).getHistoric().containsKey(codigo))
+                throw new CodeNotExist("Este código de reserva não existe");
+            Viagem flight = this.getUser(this.user).getHistoric().get(codigo);
+            if (closedDates.contains(flight.getDeparture())) throw new ClosedDate("Este dia foi encerrado");
+            this.getUser(this.user).getHistoric().remove(codigo);
+        } finally { lock.unlock(); }
     }
 }

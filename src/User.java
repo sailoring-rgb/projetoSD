@@ -1,5 +1,8 @@
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class User {
     private String username;
@@ -7,7 +10,10 @@ public class User {
     private String name;
     private boolean isAdministrador; /** false -> user normal ; true -> administrador */
     private Map<Integer,Viagem> historic; // código de reserva; viagem
-    ReentrantLock lock = new ReentrantLock();
+    private ReadWriteLock lockRW = new ReentrantReadWriteLock();
+    private Lock readlock = lockRW.readLock();
+    private Lock writelock = lockRW.writeLock();
+    //ReentrantLock lock = new ReentrantLock();
 
     public User(String username, String password, String name, boolean isSpecial, Map<Integer,Viagem> historic) {
         this.username = username;
@@ -27,42 +33,51 @@ public class User {
 
     public String getUsername() {
         try{
-            lock.lock();
+            readlock.lock();
             return this.username;
         }
-        finally { lock.unlock(); }
+        finally { readlock.unlock(); }
     }
 
     public String getPassword() {
         try{
-            lock.lock();
+            readlock.lock();
             return this.password;
         }
-        finally { lock.unlock(); }
+        finally { readlock.unlock(); }
     }
 
     public String getName() {
         try{
-            lock.lock();
+            readlock.lock();
             return this.name;
         }
-        finally { lock.unlock(); }
+        finally { readlock.unlock(); }
     }
 
     public boolean getIsAdministrador() {
         try{
-            lock.lock();
+            readlock.lock();
             return this.isAdministrador;
         }
-        finally { lock.unlock(); }
+        finally { readlock.unlock(); }
     }
 
     public Map<Integer,Viagem> getHistoric() {
         try{
-            lock.lock();
+            readlock.lock();
             return new HashMap<>(this.historic);
         }
-        finally { lock.unlock(); }
+        finally { readlock.unlock(); }
+    }
+
+    public int addHistoric(Viagem v) {
+        try{
+            writelock.lock();
+            this.historic.put(this.historic.size()+1,v.clone());
+            return this.historic.size();
+        }
+        finally { writelock.unlock(); }
     }
 
     public User clone(){

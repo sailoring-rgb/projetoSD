@@ -1,7 +1,10 @@
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Viagem {
     private String origin;
@@ -9,7 +12,17 @@ public class Viagem {
     private LocalDateTime departure;
     //private LocalDateTime arrival;
     private int capacity;
-    ReentrantLock lock = new ReentrantLock();
+    private ReadWriteLock lockRW = new ReentrantReadWriteLock();
+    private Lock readlock = lockRW.readLock();
+    private Lock writelock = lockRW.writeLock();
+    //ReentrantLock lock = new ReentrantLock();
+
+    public Viagem(){
+        this.origin = "";
+        this.destiny = "";
+        this.departure = LocalDateTime.now();
+        this.capacity = 0;
+    }
 
     public Viagem(String origin, String destiny, LocalDateTime departure){
         this.origin = origin;
@@ -29,50 +42,42 @@ public class Viagem {
 
     public String getOrigin() {
         try{
-            lock.lock();
+            readlock.lock();
             return this.origin;
         }
-        finally { lock.unlock(); }
+        finally { readlock.unlock(); }
     }
 
     public String getDestiny() {
         try{
-            lock.lock();
+            readlock.lock();
             return this.destiny;
         }
-        finally { lock.unlock(); }
+        finally { readlock.unlock(); }
     }
 
     public LocalDateTime getDeparture() {
         try{
-            lock.lock();
+            readlock.lock();
             return this.departure;
         }
-        finally { lock.unlock(); }
+        finally { readlock.unlock(); }
     }
-/*
-    public LocalDateTime getArrival() {
-        try{
-            lock.lock();
-            return this.arrival;
-        }
-        finally { lock.unlock(); }
-    }
-*/
+
     public int getCapacity(){
         try{
-            lock.lock();
+            readlock.lock();
             return this.capacity;
         }
-        finally { lock.unlock(); }
+        finally { readlock.unlock(); }
     }
 
     public void setCapacity(int capacity){
         try{
-            lock.lock();
+            writelock.lock();
             this.capacity = capacity;
         }
-        finally { lock.unlock(); }
+        finally { writelock.unlock(); }
     }
 
     public Viagem clone(){
