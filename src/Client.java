@@ -73,7 +73,7 @@ public class Client {
                 byte[] reply1 = multi.receive(1);
                 System.out.println("\n");
                 if(error==0){
-                    System.out.print(new String(reply1) + "\n\n");
+                    System.out.print(new String(reply1) + "\n\n\n");
                     user = name;
                     if(isAdmin) funcionalidadesAdmin();
                     else funcionalidadesBasicas();
@@ -197,19 +197,19 @@ public class Client {
             try {
                 //System.out.println("Lista de voos (origem -> destino): ");
                 //listaVoos();
-                System.out.print("Insira percurso completo (A->B): ");
+                System.out.print("\nInsira percurso completo (origem->destino): ");
                 String trip = stdin.readLine();
-                System.out.print("Insira intervalo de data possíveis (DD-MM-AAAA;DD-MM-AAAA): ");
-                String date = stdin.readLine();
+                System.out.print("Insira intervalo de data possíveis (AAAA-MM-DD;AAAA-MM-DD): ");
+                String interval = stdin.readLine();
 
-                multi.send(3, (user+" "+trip+" "+date+" ").getBytes());
+                multi.send(3, (trip+" "+interval+" ").getBytes());
 
                 byte[] reply = multi.receive(3);
                 int error = Integer.parseInt(new String(reply));
                 byte[] reply1 = multi.receive(3);
-                if (error == 0) System.out.println("\033[1;36m" + new String(reply1) + "\033[0m");
+                System.out.print("\n\n");
+                if (error == 0) System.out.println(new String(reply1));
                 else System.out.print("\033[0;31m" + new String(reply1) + ": Reserva não efetuada!!" + "\n\n\033[0m");
-                System.out.println("\n");
             }
             catch (NullPointerException | IOException | InterruptedException e) {
                     System.out.print(e.getMessage() + "\n\n");

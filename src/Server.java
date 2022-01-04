@@ -3,22 +3,19 @@ import Exceptions.UsernameAlreadyExists;
 import Exceptions.UsernameNotExist;
 import Exceptions.WrongPassword;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 
 public class Server {
 
-    private static UserInfo info;
+    private static GestInfo info;
     private static Map<String,TaggedConnection> connections = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
         ServerSocket ss = new ServerSocket(12343);
-        info = new UserInfo();
+        info = new GestInfo();
 
         while(true) {
             Socket s = ss.accept();
@@ -52,7 +49,7 @@ public class Server {
                             else if (frame.tag == 3) {
                                 String[] tokens = data.split(" ");
                                 System.out.print("A reservar viagem...\n\n");
-                                info.addReservation(tokens[1],tokens[2]);
+                                info.addReservation(tokens[0],tokens[1]);
                                 c.send(frame.tag,String.valueOf(cond).getBytes());
                                 c.send(frame.tag,"Reserva efetuada com sucesso!!".getBytes());
                             }

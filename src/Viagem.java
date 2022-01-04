@@ -1,5 +1,6 @@
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Viagem {
@@ -79,11 +80,11 @@ public class Viagem {
     }
 
     public String toString () {
-        DateTimeFormatter dataformatada = DateTimeFormatter.ofPattern("dd-mm-yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd",Locale.US);
         StringBuilder builder = new StringBuilder();
         builder.append(this.origin).append(";");
         builder.append(this.destiny).append(";");
-        builder.append(this.departure.format(dataformatada)).append(";");
+        builder.append(this.departure.format(formatter)).append(";");
         //builder.append(this.arrival.format(dataformatada)).append(";");
         return builder.toString();
     }
