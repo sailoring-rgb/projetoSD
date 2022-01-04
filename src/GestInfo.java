@@ -22,11 +22,12 @@ public class GestInfo {
         this.flights = new ArrayList<>();
     }
 
-    public GestInfo(Map<String,User> credentials, List<Date> closedDates, List<Viagem> flights) {
-        this.user = "";
-        this.credentials = credentials.entrySet().stream().collect(Collectors.toMap(e->e.getKey(),e-> e.getValue().clone()));
-        this.closedDates = new ArrayList<>(closedDates);
-        this.flights = new ArrayList<>(flights);
+    public User getUser(String username){
+        try {
+            lock.lock();
+            return credentials.get(username);
+        }
+        finally { lock.unlock(); }
     }
 
     public boolean registerUser(String username, String password, String name, Boolean isAdmin) throws UsernameAlreadyExists {
@@ -34,8 +35,7 @@ public class GestInfo {
             lock.lock();
             if (credentials.containsKey(username)){
                 throw new UsernameAlreadyExists("Este username não está disponível");
-            }
-            else{
+            } else{
                 Map<Integer,Viagem> historic = new HashMap<>();
                 User user = new User(username,password,name,isAdmin,historic);
                 this.user = username;
@@ -66,14 +66,7 @@ public class GestInfo {
         finally { lock.unlock(); }
     }
 
-    public boolean isAdministrador(String username){
-        try{
-            lock.lock();
-            return credentials.get(username).getIsAdministrador();
-        } finally { lock.unlock(); }
-    }
-
-    public void addReservation(String route, String dates) throws ClosedDate{
+    public int makeReservation(String route, String dates) throws ClosedDate{
         try {
             lock.lock();
             String[] tokens1 = route.split("->");
@@ -97,16 +90,6 @@ public class GestInfo {
             this.flights.add(flight);
             this.getUser(user).getHistoric().put(this.getUser(user).getHistoric().size() + 1, flight.clone());
         } finally { lock.unlock(); }
-    }
-
-    public void cancelarReserva(String Username, String codR){
-            try{
-                lock.lock();
-                credentials.get(Username).removeViagem(codR);
-
-            }finally {
-                lock.unlock();
-            }
     }
 
     public LocalDateTime pickDate(LocalDateTime date1, LocalDateTime date2) throws ClosedDate {
@@ -133,11 +116,15 @@ public class GestInfo {
 
     }
 
-    public User getUser(String username){
+    public void cancelReservation(String codString) throws CodeNotExist, ClosedDate {
         try {
             lock.lock();
-            return credentials.get(username);
-        }
-        finally { lock.unlock(); }
+            int codigo = Integer.parseInt(codString);
+            if (!this.getUser(this.user).getHistoric().containsKey(codigo))
+                throw new CodeNotExist("Este código de reserva não existe");
+            Viagem flight = this.getUser(this.user).getHistoric().get(codigo);
+            if (closedDates.contains(flight.getDeparture())) throw new ClosedDate("Este dia foi encerrado");
+            this.getUser(this.user).getHistoric().remove(codigo);
+        } finally { lock.unlock(); }
     }
 }
