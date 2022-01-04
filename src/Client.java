@@ -242,6 +242,11 @@ public class Client {
             System.out.println("Lista de voos (origem -> destino): ");
 
             //apresentar lista
+            try {
+                multi.send(5,null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
     }
 

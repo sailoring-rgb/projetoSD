@@ -99,6 +99,16 @@ public class GestInfo {
         } finally { lock.unlock(); }
     }
 
+    public void cancelarReserva(String Username, String codR){
+            try{
+                lock.lock();
+                credentials.get(Username).removeViagem(codR);
+
+            }finally {
+                lock.unlock();
+            }
+    }
+
     public LocalDateTime pickDate(LocalDateTime date1, LocalDateTime date2) throws ClosedDate {
         try {
             lock.lock();
@@ -111,6 +121,16 @@ public class GestInfo {
         } finally {
             lock.unlock();
         }
+    }
+
+    public List<Viagem> getFlights() {
+        try {
+            lock.lock();
+            return flights;
+        }finally {
+            lock.unlock();
+        }
+
     }
 
     public User getUser(String username){

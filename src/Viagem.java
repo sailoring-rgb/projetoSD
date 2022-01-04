@@ -81,11 +81,10 @@ public class Viagem {
 
     public String toString () {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd",Locale.US);
-        StringBuilder builder = new StringBuilder();
-        builder.append(this.origin).append(";");
-        builder.append(this.destiny).append(";");
-        builder.append(this.departure.format(formatter)).append(";");
         //builder.append(this.arrival.format(dataformatada)).append(";");
-        return builder.toString();
+        String builder = this.origin + ";" +
+                this.destiny + ";" +
+                this.departure.format(formatter) + ";";
+        return builder;
     }
 }

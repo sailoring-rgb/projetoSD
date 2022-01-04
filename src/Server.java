@@ -57,8 +57,17 @@ public class Server {
                                 String[] tokens = data.split(" ");
                                 System.out.println("A cancelar reserva de viagem...");
                                 info.cancelarReserva(tokens[0],tokens[1]);
-                                c.send(frame.tag,"Reserva cancelada!");
+                                c.send(frame.tag,"Reserva cancelada!".getBytes());
                              }
+                            else if (frame.tag == 5){
+                                System.out.println("Lista de voos origem -> destino");
+                                List<Viagem> vgs = info.getFlights();
+                                for (Viagem v: vgs) {
+                                    c.send(frame.tag,v.toString().getBytes());
+                                }
+
+                            }
+
                         } catch ( UsernameAlreadyExists | UsernameNotExist | WrongPassword | ClosedDate e) {
                             cond = 1;
                             c.send(frame.tag, String.valueOf(cond).getBytes());
