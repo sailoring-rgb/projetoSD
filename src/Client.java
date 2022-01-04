@@ -229,6 +229,7 @@ public class Client {
                 String cod = stdin.readLine();
 
                 //cancelar reserva
+                multi.send(4,(name+" "+cod+" ").getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
             }

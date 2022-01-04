@@ -53,6 +53,12 @@ public class Server {
                                 c.send(frame.tag,String.valueOf(cond).getBytes());
                                 c.send(frame.tag,"Reserva efetuada com sucesso!!".getBytes());
                             }
+                            else if (frame.tag == 4){
+                                String[] tokens = data.split(" ");
+                                System.out.println("A cancelar reserva de viagem...");
+                                info.cancelarReserva(tokens[0],tokens[1]);
+                                c.send(frame.tag,"Reserva cancelada!");
+                             }
                         } catch ( UsernameAlreadyExists | UsernameNotExist | WrongPassword | ClosedDate e) {
                             cond = 1;
                             c.send(frame.tag, String.valueOf(cond).getBytes());
