@@ -95,9 +95,14 @@ public class UserInfo {
     }
 
     public LocalDateTime pickDate(LocalDateTime date1, LocalDateTime date2) throws ClosedDate {
-        if (!closedDates.contains(date1)) return date1;
-        else if (!closedDates.contains(date2)) return date2;
-        else throw new ClosedDate("Este dia foi encerrado");
+        try {
+            lock.lock();
+            if (!closedDates.contains(date1)) return date1;
+            else if (!closedDates.contains(date2)) return date2;
+            else throw new ClosedDate("Este dia foi encerrado");
+        } finally {
+            lock.unlock();
+        }
     }
 
     public User getUser(String username){
