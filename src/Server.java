@@ -31,6 +31,7 @@ public class Server {
                                     System.out.print("A validar as credenciais...\n\n");
                                     connections.put(tokens[0],c);
                                     c.send(frame.tag, String.valueOf(cond).getBytes());
+                                    c.send(frame.tag, String.valueOf(info.getUser(tokens[0]).getIsAdministrador()).getBytes());
                                     c.send(frame.tag, ("Login efetuado com sucesso!!").getBytes());
                                 }
                             }

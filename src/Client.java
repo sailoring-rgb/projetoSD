@@ -10,7 +10,7 @@ public class Client {
     private static Thread warning;
 
     public static void run() throws IOException, InterruptedException{
-        System.out.print("\n\n\033[1;35mSeja Bem-vindo!\033[0m\n\n");
+        System.out.print("\n\n\033[1;35mSeja Bem-vindo!\033[0m\n\n\n");
         warning.start();
         menu();
         warning.interrupt();
@@ -119,11 +119,13 @@ public class Client {
                 multi.send(1, (name+" "+password+" ").getBytes());
 
                 byte[] reply = multi.receive(1);
-                int error =  Integer.parseInt(new String(reply));
+                int error = Integer.parseInt(new String(reply));
                 byte[] reply1 = multi.receive(1);
+                isAdmin = Boolean.parseBoolean(new String(reply1));
+                byte[] reply2 = multi.receive(1);
                 System.out.println("\n");
                 if(error==0){
-                    System.out.print(new String(reply1) + "\n\n\n");
+                    System.out.print(new String(reply2) + "\n\n\n");
                     user = name;
                     if(isAdmin) funcionalidadesAdmin();
                     else funcionalidadesBasicas();
@@ -197,7 +199,7 @@ public class Client {
                 if(option == 0) {
                     warning.interrupt();
                     multi.close();
-                    System.out.print("\n\n\033[1;35mAté à Próxima!\033[0m\n\n");
+                    System.out.print("\033[1;35mAté à Próxima!\033[0m\n\n");
                     System.exit(0);
                 }
                 else{
