@@ -76,6 +76,12 @@ public class Server {
                                 c.send(frame.tag,"\n\nEncerramento efetuado com sucesso!!".getBytes());
                             }
 
+                            else if(frame.tag == 8){
+                                System.out.print("A carregar reservas de voos...\n\n");
+                                String list = info.flightsReservations();
+                                c.send(frame.tag,list.getBytes());
+                            }
+
                         } catch ( UsernameAlreadyExists | UsernameNotExist | WrongPassword | ClosedDate | CodeNotExist e) {
                             cond = 1;
                             c.send(frame.tag, String.valueOf(cond).getBytes());

@@ -54,7 +54,8 @@ public class Client {
                     + "2: Encerrar o dia \n"
                     + "3: Reservar viagem \n"
                     + "4: Cancelar reserva de uma viagem \n"
-                    + "5: Lista de voos \n\n"
+                    + "5: Consultar lista de voos existentes\n"
+                    + "6: Consultar minhas reservas de voos\n\n"
                     + "0: Logout \n"
                     + "--------------------------------------\n");
             System.out.print("Introduza a opção: ");
@@ -69,6 +70,8 @@ public class Client {
                 cancelaReserva();
             else if (option.equals("5"))
                 listaVoos();
+            else if(option.equals("6"))
+                reservasDeVoos();
             else if (option.equals("0")) {
                 logout(1);
                 res = false;
@@ -84,7 +87,8 @@ public class Client {
             System.out.print("-----------------MENU-----------------\n"
                     + "1: Reservar viagem \n"
                     + "2: Cancelar reserva de uma viagem \n"
-                    + "3: Lista de voos\n\n"
+                    + "3: Consultar lista de voos existentes\n"
+                    + "4: Consultar minhas reservas de voos\n\n"
                     + "0: Logout \n"
                     + "--------------------------------------\n"
                     + "Introduza a opção: ");
@@ -95,6 +99,8 @@ public class Client {
                 cancelaReserva();
             else if (option.equals("3"))
                 listaVoos();
+            else if(option.equals("4"))
+                reservasDeVoos();
             else if (option.equals("0")){
                 logout(1);
                 res = false;
@@ -324,13 +330,30 @@ public class Client {
         t.join();
     }
 
+    public static void reservasDeVoos() throws InterruptedException{
+        Thread t = new Thread(() -> {
+            try {
+                multi.send(8,(" ").getBytes());
+
+                byte[] reply = multi.receive(8);
+                System.out.print("\n\n\033[4;30mReservas de Voos (origem->destino):\033[0m");
+                System.out.print("\n");
+                System.out.println(new String(reply));
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        t.start();
+        t.join();
+    }
+
     public static void main(String[] args) throws Exception{
         Socket socket = new Socket("localhost",12343);
         multi = new Demultiplexer(new TaggedConnection(socket));
         warning = new Thread(() -> {
             try{
                 while(true){
-                    byte[] reply = multi.receive(8);
+                    byte[] reply = multi.receive(9);
                     System.out.print(new String(reply) + "\n\n");
                 }
             } catch (IOException | InterruptedException e) {}

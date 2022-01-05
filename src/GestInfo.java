@@ -137,4 +137,19 @@ public class GestInfo {
             closedDates.add(date1);
         } finally { lock.unlock(); }
     }
+
+    public String flightsReservations(){
+        try{
+            lock.lock();
+            StringBuilder builder = new StringBuilder();
+            if(this.getUser(this.user).getHistoric().isEmpty()) builder.append("Ainda não foram registadas reservas.");
+            else{
+                for(Map.Entry<Integer,Viagem> v : this.getUser(this.user).getHistoric().entrySet()){
+                    builder.append("\nCódigo: ").append(v.getKey()).append("\n");
+                    builder.append(v.getValue().toStringComplete());
+                }
+            }
+            return builder.toString();
+        }finally{ lock.unlock();}
+    }
 }
