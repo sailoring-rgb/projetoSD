@@ -61,8 +61,8 @@ public class Client {
             String option = stdin.readLine();
             if (option.equals("1"))
                 insereInformacao();
-            else if (option.equals("2"));
-                //encerrarDia();
+            else if (option.equals("2"))
+                encerraDia();
             else if (option.equals("3"))
                 reservaViagem();
             else if (option.equals("4"))
@@ -232,7 +232,7 @@ public class Client {
                 byte[] reply1 = multi.receive(3);
                 System.out.print("\n\n");
                 if (error == 0) System.out.println(new String(reply1));
-                else System.out.print("\033[0;31m" + new String(reply1) + ": Reserva não efetuada!!" + "\n\n\033[0m");
+                else System.out.print("\033[0;31m" + new String(reply1) + ": Reserva não efetuada!!" + "\n\033[0m");
             }
             catch (NullPointerException | IOException | InterruptedException e) {
                     System.out.print(e.getMessage() + "\n\n");
@@ -271,7 +271,7 @@ public class Client {
                 multi.send(5,(" ").getBytes());
 
                 byte[] reply = multi.receive(5);
-                System.out.print("\n\n\033[4;30mLista de voos (origem->destino):\033[4m");
+                System.out.print("\n\n\033[4;30mLista de voos (origem->destino):\033[0m");
                 System.out.print("\n");
                 System.out.println(new String(reply));
             } catch (IOException | InterruptedException e) {
@@ -305,13 +305,32 @@ public class Client {
         t.join();
     }
 
+    public static void encerraDia() throws InterruptedException {
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+        Thread t = new Thread(() -> {
+            try{
+                System.out.print("\nInsira dia (AAAA-MM-DD): ");
+                String day = stdin.readLine();
+
+                multi.send(7, (day+" ").getBytes());
+
+                byte[] reply = multi.receive(7);
+                System.out.println(new String(reply));
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        t.start();
+        t.join();
+    }
+
     public static void main(String[] args) throws Exception{
         Socket socket = new Socket("localhost",12343);
         multi = new Demultiplexer(new TaggedConnection(socket));
         warning = new Thread(() -> {
             try{
                 while(true){
-                    byte[] reply = multi.receive(7);
+                    byte[] reply = multi.receive(8);
                     System.out.print(new String(reply) + "\n\n");
                 }
             } catch (IOException | InterruptedException e) {}

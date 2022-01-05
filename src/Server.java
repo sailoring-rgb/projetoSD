@@ -69,6 +69,12 @@ public class Server {
                                 info.insertInf(tokens[0],tokens[1],tokens[2]);
                                 c.send(frame.tag,"\n\nInformação inserida com sucesso!!".getBytes());
                             }
+                            else if (frame.tag == 7){
+                                String[] tokens = data.split(" ");
+                                System.out.print("A encerrar dia...\n\n");
+                                info.closeDay(tokens[0]);
+                                c.send(frame.tag,"\n\nEncerramento efetuado com sucesso!!".getBytes());
+                            }
 
                         } catch ( UsernameAlreadyExists | UsernameNotExist | WrongPassword | ClosedDate | CodeNotExist e) {
                             cond = 1;

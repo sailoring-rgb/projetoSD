@@ -10,12 +10,12 @@ public class GestInfo {
     private String user;
     private ReentrantLock lock = new ReentrantLock();
     private Map<String,User> credentials;
-    private List<Date> closedDates;
+    private Set<LocalDateTime> closedDates;
     private List<Viagem> flights;
 
     public GestInfo() {
         this.credentials = new HashMap<>();
-        this.closedDates = new ArrayList<>();
+        this.closedDates = new HashSet<>();
         this.flights = new ArrayList<>();
     }
 
@@ -110,10 +110,12 @@ public class GestInfo {
         try {
             lock.lock();
             String res, res1 = "";
-            for(Viagem v: this.flights){
-                res = v.toString();
-                res1 = String.join("\n",res1,res);
-            }
+            if(this.flights.isEmpty()) res1 = "Ainda não foi registado nenhum voo.";
+            else
+                for (Viagem v : this.flights) {
+                    res = v.toString();
+                    res1 = String.join("\n", res1, res);
+                }
             return res1;
         } finally { lock.unlock(); }
     }
@@ -127,5 +129,12 @@ public class GestInfo {
         }finally{ lock.unlock(); }
     }
 
-    //public void closeDay ()
+    public void closeDay(String date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
+        LocalDateTime date1 = LocalDate.parse(date, formatter).atStartOfDay();
+        try {
+            lock.lock();
+            closedDates.add(date1);
+        } finally { lock.unlock(); }
+    }
 }

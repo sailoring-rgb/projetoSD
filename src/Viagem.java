@@ -85,7 +85,7 @@ public class Viagem {
 
     public String toString () {
         StringBuilder builder = new StringBuilder();
-        builder.append("Route:").append(this.origin + "->" + this.destiny);
+        builder.append("Route: ").append(this.origin + "->" + this.destiny);
         return builder.toString();
     }
 }
