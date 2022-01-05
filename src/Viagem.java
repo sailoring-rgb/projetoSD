@@ -24,6 +24,12 @@ public class Viagem {
         this.capacity = 0;
     }
 
+    public Viagem(String origin, String destiny, int capacity){
+        this.origin = origin;
+        this.destiny = destiny;
+        this.capacity = capacity;
+    }
+
     public Viagem(String origin, String destiny, LocalDateTime departure){
         this.origin = origin;
         this.destiny = destiny;
@@ -85,11 +91,9 @@ public class Viagem {
     }
 
     public String toString () {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd",Locale.US);
+        //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd",Locale.US);
         //builder.append(this.arrival.format(dataformatada)).append(";");
-        String builder = this.origin + ";" +
-                this.destiny + ";" +
-                this.departure.format(formatter) + ";";
+        String builder = this.origin + "->" + this.destiny;
         return builder;
     }
 }

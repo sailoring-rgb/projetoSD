@@ -59,9 +59,11 @@ public class Demultiplexer implements AutoCloseable {
     public void send(TaggedConnection.Frame frame) throws IOException {
         con.send(frame);
     }
+
     public void send(int tag, byte[] data) throws IOException {
         con.send(tag,data);
     }
+
     public byte[] receive(int tag) throws IOException, InterruptedException{
         lock.lock();
         Entry entry;

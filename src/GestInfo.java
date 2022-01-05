@@ -1,11 +1,8 @@
 import Exceptions.*;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.stream.Collectors;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -46,14 +43,6 @@ public class GestInfo {
         finally { lock.unlock(); }
     }
 
-    public void removeUser(String username){
-        try{
-            lock.lock();
-            credentials.remove(username);
-        }
-        finally{ lock.unlock(); }
-    }
-
     public boolean validateUser(String username, String password) throws UsernameNotExist, WrongPassword {
         try {
             lock.lock();
@@ -82,13 +71,12 @@ public class GestInfo {
             // FALTA IMPLEMENTAR A QUESTÃO DAS ESCALAS
             for (Viagem v : this.flights) {
                 if (v.getOrigin().equals(flight.getOrigin()) && v.getDestiny().equals(flight.getDestiny()) && v.getDeparture().equals(flight.getDeparture())) {
-                    v.setCapacity(v.getCapacity() - 1);
-                    this.getUser(user).getHistoric().put(this.getUser(user).getHistoric().size() + 1, v.clone());
+                    flight.setCapacity(v.getCapacity()-1);
                     break;
                 }
             }
             this.flights.add(flight);
-            this.getUser(user).getHistoric().put(this.getUser(user).getHistoric().size() + 1, flight.clone());
+            return this.getUser(user).addHistoric(flight);
         } finally { lock.unlock(); }
     }
 
@@ -106,16 +94,6 @@ public class GestInfo {
         }
     }
 
-    public List<Viagem> getFlights() {
-        try {
-            lock.lock();
-            return flights;
-        }finally {
-            lock.unlock();
-        }
-
-    }
-
     public void cancelReservation(String codString) throws CodeNotExist, ClosedDate {
         try {
             lock.lock();
@@ -127,4 +105,28 @@ public class GestInfo {
             this.getUser(this.user).getHistoric().remove(codigo);
         } finally { lock.unlock(); }
     }
+
+    public String flightsList() {
+        try {
+            lock.lock();
+            String res = "";
+            String res1 = "";
+            for(Viagem v: this.flights){
+                res = v.toString();
+                System.out.print(res);
+                res1 = String.join("\n",res1,res);
+            }
+            return res1;
+        } finally { lock.unlock(); }
+    }
+
+    public void insertInf(String origin, String destiny, int capacity){
+        try{
+            lock.lock();
+            Viagem flight = new Viagem(origin,destiny,capacity);
+            this.flights.add(flight.clone());
+        }finally{ lock.unlock(); }
+    }
+
+    //public void closeDay ()
 }

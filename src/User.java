@@ -31,14 +31,6 @@ public class User {
         this.historic = user.getHistoric();
     }
 
-    public void removeViagem(String codReserva){
-        try{
-            lock.lock();
-            this.historic.remove(Integer.parseInt(codReserva));
-        }finally {
-            lock.unlock();
-        }
-    }
     public String getUsername() {
         try{
             readlock.lock();

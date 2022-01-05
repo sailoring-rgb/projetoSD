@@ -24,12 +24,12 @@ public class Client {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         String username = null;
         while(username == null){
-            System.out.print("---------------MENU---------------\n"
-                            + "1: Login\n"
-                            + "2: Registar\n\n"
-                            + "0: Sair\n"
-                            + "----------------------------------\n"
-                            + "Introduza a opção: ");
+            System.out.print("-----------------MENU-----------------\n"
+                    + "1: Login\n"
+                    + "2: Registar\n\n"
+                    + "0: Sair\n"
+                    + "--------------------------------------\n"
+                    + "Introduza a opção: ");
             String option = stdin.readLine();
             System.out.println("\n");
             if(option.equals("1"))
@@ -37,13 +37,14 @@ public class Client {
             else if (option.equals("2"))
                 register();
             else if (option.equals("0"))
-                logout();
+                logout(0);
             else{
                 System.out.println("\033[0;31mOpção incorreta!\033[0m");
                 System.out.println("\n\n");
             }
         }
     }
+
 
     public static void funcionalidadesAdmin() throws IOException, InterruptedException {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
@@ -70,7 +71,7 @@ public class Client {
             else if (option.equals("5"))
                 listaVoos();
             else if (option.equals("0")) {
-                logout();
+                logout(1);
                 res = false;
             } else System.out.println("\033[0;31mOpção incorreta!\033[0m");
             System.out.println("\n\n");
@@ -96,7 +97,7 @@ public class Client {
             else if (option.equals("3"))
                 listaVoos();
             else if (option.equals("0")) {
-                logout();
+                logout(1);
                 res = false;
             }
             else System.out.println("\033[0;31mOpção incorreta!\033[0m");
@@ -191,13 +192,19 @@ public class Client {
         t.join();
     }
 
-    public static void logout() throws InterruptedException {
+    public static void logout(int option) throws InterruptedException {
         Thread thread = new Thread(() -> {
             try {
-                warning.interrupt();
-                multi.close();
-                System.exit(0);
-            } catch (IOException e) {
+                if(option == 0) {
+                    warning.interrupt();
+                    multi.close();
+                    System.exit(0);
+                }
+                else{
+                    System.out.print("\n\n");
+                    menu();
+                }
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         });
@@ -258,12 +265,17 @@ public class Client {
 
     public static void listaVoos(){
         Thread t = new Thread(() -> {
-            System.out.println("Lista de voos (origem -> destino): ");
-
-            //apresentar lista
             try {
-                multi.send(5,null);
-            } catch (IOException e) {
+                multi.send(5,("none"+" ").getBytes());
+
+                byte[] reply = multi.receive(5);
+                int error = Integer.parseInt(new String(reply));
+                byte[] reply1 = multi.receive(5);
+                System.out.print("Lista de voos (origem -> destino): ");
+                System.out.print("\n\n");
+                if (error == 0) System.out.println(new String(reply1));
+                else System.out.print("\033[0;31m" + new String(reply1) + ": Consulta não efetuada!!" + "\n\n\033[0m");
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         });
