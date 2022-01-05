@@ -80,6 +80,13 @@ public class User {
         finally { writelock.unlock(); }
     }
 
+    public void removeHistoric(int codigo){
+        try{
+            writelock.lock();
+            this.historic.remove(codigo);
+        } finally { writelock.unlock(); }
+    }
+
     public User clone(){
         return new User(this);
     }

@@ -102,7 +102,7 @@ public class GestInfo {
                 throw new CodeNotExist("Este código de reserva não existe");
             Viagem flight = this.getUser(this.user).getHistoric().get(codigo);
             if (closedDates.contains(flight.getDeparture())) throw new ClosedDate("Este dia foi encerrado");
-            this.getUser(this.user).getHistoric().remove(codigo);
+            this.getUser(this.user).removeHistoric(codigo);
         } finally { lock.unlock(); }
     }
 
