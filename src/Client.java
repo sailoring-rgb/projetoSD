@@ -15,7 +15,6 @@ public class Client {
         menu();
         warning.interrupt();
         multi.close();
-        System.out.print("\n\n\033[1;35mAté à Próxima!\033[0m\n\n");
     }
 
     /************************************************ MENUS ************************************************/
@@ -60,9 +59,9 @@ public class Client {
                     + "--------------------------------------\n");
             System.out.print("Introduza a opção: ");
             String option = stdin.readLine();
-            if (option.equals("1")) ;
-                //insereInformacao();
-            else if (option.equals("2")) ;
+            if (option.equals("1"))
+                insereInformacao();
+            else if (option.equals("2"));
                 //encerrarDia();
             else if (option.equals("3"))
                 reservaViagem();
@@ -96,7 +95,7 @@ public class Client {
                 cancelaReserva();
             else if (option.equals("3"))
                 listaVoos();
-            else if (option.equals("0")) {
+            else if (option.equals("0")){
                 logout(1);
                 res = false;
             }
@@ -198,6 +197,7 @@ public class Client {
                 if(option == 0) {
                     warning.interrupt();
                     multi.close();
+                    System.out.print("\n\n\033[1;35mAté à Próxima!\033[0m\n\n");
                     System.exit(0);
                 }
                 else{
@@ -263,22 +263,44 @@ public class Client {
         t.join();
     }
 
-    public static void listaVoos(){
+    public static void listaVoos() throws InterruptedException {
         Thread t = new Thread(() -> {
             try {
-                multi.send(5,("none"+" ").getBytes());
+                multi.send(5,(" ").getBytes());
 
                 byte[] reply = multi.receive(5);
-                int error = Integer.parseInt(new String(reply));
-                byte[] reply1 = multi.receive(5);
-                System.out.print("Lista de voos (origem -> destino): ");
-                System.out.print("\n\n");
-                if (error == 0) System.out.println(new String(reply1));
-                else System.out.print("\033[0;31m" + new String(reply1) + ": Consulta não efetuada!!" + "\n\n\033[0m");
+                System.out.print("\n\n\033[4;30mLista de voos (origem->destino):\033[4m");
+                System.out.print("\n");
+                System.out.println(new String(reply));
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         });
+        t.start();
+        t.join();
+    }
+
+    public static void insereInformacao() throws InterruptedException {
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+        Thread t = new Thread(() -> {
+            try{
+                System.out.print("\nInsira a origem do voo: ");
+                String origin = stdin.readLine();
+                System.out.print("Insira o destino do voo: ");
+                String destiny = stdin.readLine();
+                System.out.print("Insira a capacidade do voo: ");
+                String capacity = stdin.readLine();
+
+                multi.send(6, (origin+" "+destiny+" "+capacity+" ").getBytes());
+
+                byte[] reply = multi.receive(6);
+                System.out.println(new String(reply));
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        t.start();
+        t.join();
     }
 
     public static void main(String[] args) throws Exception{
@@ -287,7 +309,7 @@ public class Client {
         warning = new Thread(() -> {
             try{
                 while(true){
-                    byte[] reply = multi.receive(6);
+                    byte[] reply = multi.receive(7);
                     System.out.print(new String(reply) + "\n\n");
                 }
             } catch (IOException | InterruptedException e) {}

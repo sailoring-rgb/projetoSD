@@ -24,7 +24,6 @@ public class Server {
                         int cond = 0;
                         TaggedConnection.Frame frame = c.receive();
                         String data = new String(frame.data);
-                        System.out.print(frame.tag);
                         try {
                             if (frame.tag == 1) {
                                 String[] tokens = data.split(" ");
@@ -61,15 +60,13 @@ public class Server {
                             else if (frame.tag == 5){
                                 System.out.print("A carregar lista de voos...\n\n");
                                 String list = info.flightsList();
-                                c.send(frame.tag,String.valueOf(cond).getBytes());
                                 c.send(frame.tag,list.getBytes());
                             }
                             else if (frame.tag == 6){
                                 String[] tokens = data.split(" ");
                                 System.out.print("A inserir informação sobre voo...\n\n");
-                                info.insertInf(tokens[0],tokens[1], Integer.parseInt(tokens[2]));
-                                c.send(frame.tag,String.valueOf(cond).getBytes());
-                                c.send(frame.tag,"Informação inserida com sucesso!!".getBytes());
+                                info.insertInf(tokens[0],tokens[1],tokens[2]);
+                                c.send(frame.tag,"\n\nInformação inserida com sucesso!!".getBytes());
                             }
 
                         } catch ( UsernameAlreadyExists | UsernameNotExist | WrongPassword | ClosedDate | CodeNotExist e) {

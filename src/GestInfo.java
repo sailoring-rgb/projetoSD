@@ -109,20 +109,19 @@ public class GestInfo {
     public String flightsList() {
         try {
             lock.lock();
-            String res = "";
-            String res1 = "";
+            String res, res1 = "";
             for(Viagem v: this.flights){
                 res = v.toString();
-                System.out.print(res);
                 res1 = String.join("\n",res1,res);
             }
             return res1;
         } finally { lock.unlock(); }
     }
 
-    public void insertInf(String origin, String destiny, int capacity){
+    public void insertInf(String origin, String destiny, String capString){
         try{
             lock.lock();
+            int capacity = Integer.parseInt(capString);
             Viagem flight = new Viagem(origin,destiny,capacity);
             this.flights.add(flight.clone());
         }finally{ lock.unlock(); }
