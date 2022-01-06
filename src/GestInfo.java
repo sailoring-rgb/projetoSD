@@ -3,13 +3,7 @@ import Exceptions.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class GestInfo {
@@ -17,12 +11,12 @@ public class GestInfo {
     private ReentrantLock lock = new ReentrantLock();
     private Map<String,User> credentials;
     private Set<LocalDateTime> closedDates;
-    private List<Viagem> flights;
+    private Map<String,Integer> flights;
 
     public GestInfo() {
         this.credentials = new HashMap<>();
         this.closedDates = new HashSet<>();
-        this.flights = new ArrayList<>();
+        this.flights = new HashMap<>();
     }
 
     public User getUser(String username){
@@ -61,34 +55,33 @@ public class GestInfo {
         finally { lock.unlock(); }
     }
 
-    public int makeReservation(String route, String dates) throws ClosedDate{
+    public int makeReservation(String route, String dates) throws ClosedDate, FlightNotAvailable{
         try {
             lock.lock();
-            String[] tokens1 = route.split("->");
-            String[] tokens2 = dates.split(";");
-            int size = tokens1.length;
+            List<String> tokens1 = Arrays.asList(route.split("->"));  // escalas do percurso
+            String[] tokens2 = dates.split(";");   // datas do intervalo
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
-            LocalDateTime date1 = LocalDate.parse(tokens2[0], formatter).atStartOfDay();
-            LocalDateTime date2 = LocalDate.parse(tokens2[1], formatter).atStartOfDay();
-            LocalDateTime date = pickDate(date1, date2);
+            LocalDateTime date = pickDate(tokens2);
 
-            Viagem flight = new Viagem(tokens1[0], tokens1[size - 1], date);
-            // FALTA IMPLEMENTAR A QUESTÃO DAS ESCALAS
-            for (Viagem v : this.flights) {
-                if (v.getOrigin().equals(flight.getOrigin()) && v.getDestiny().equals(flight.getDestiny()) && v.getDeparture().equals(flight.getDeparture())) {
-                    flight.setCapacity(v.getCapacity()-1);
-                    break;
-                }
+            Viagem flight;
+            int size = tokens1.size();
+            if(flightAvailable(tokens1,size)){
+                flight = new Viagem(tokens1.get(0),tokens1.get(size-1),date);
+                return this.getUser(user).addHistoric(flight);
             }
-            this.flights.add(flight);
-            return this.getUser(user).addHistoric(flight);
+            else throw new FlightNotAvailable("Este voo não está disponível");
+
+            // NOTA: A CAPACIDADE DO VOO NÃO É DECREMENTADA, BEM COMO, QUANDO É CANCELADA, NÃO É INCREMENTADA.
+
         } finally { lock.unlock(); }
     }
 
-    public LocalDateTime pickDate(LocalDateTime date1, LocalDateTime date2) throws ClosedDate {
+    public LocalDateTime pickDate(String[] tokens) throws ClosedDate {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
         try {
             lock.lock();
+            LocalDateTime date1 = LocalDate.parse(tokens[0], formatter).atStartOfDay();
+            LocalDateTime date2 = LocalDate.parse(tokens[1], formatter).atStartOfDay();
             if(closedDates.isEmpty()) return date1;
             else{
                 if (!closedDates.contains(date1)) return date1;
@@ -115,14 +108,31 @@ public class GestInfo {
     public String flightsList() {
         try {
             lock.lock();
-            String res, res1 = "";
+            String res1 = "";
             if(this.flights.isEmpty()) res1 = "Ainda não foi registado nenhum voo.";
             else
-                for (Viagem v : this.flights) {
-                    res = v.toString();
-                    res1 = String.join("\n", res1, res);
+                for (String s: this.flights.keySet()) {
+                    String newS = "Route: " + s;
+                    res1 = String.join("\n", res1, newS);
                 }
             return res1;
+        } finally { lock.unlock(); }
+    }
+
+    public boolean flightAvailable(List<String> tokens, int size){
+        boolean exists = false;
+        System.out.println(tokens);
+        try{
+            lock.lock();
+            for (int i = 1; i <= size-1; i++) {
+                String res2 = tokens.get(i-1) + "->" + tokens.get(i);
+                if(this.flights.containsKey(res2) && this.flights.get(res2) > 0){
+                    exists = true;
+                    break;
+                }
+                else exists = false;
+            }
+            return exists;
         } finally { lock.unlock(); }
     }
 
@@ -130,9 +140,9 @@ public class GestInfo {
         try{
             lock.lock();
             int capacity = Integer.parseInt(capString);
-            Viagem flight = new Viagem(origin,destiny,capacity);
-            this.flights.add(flight.clone());
-        }finally{ lock.unlock(); }
+            String res = origin + "->" + destiny;
+            this.flights.put(res,capacity);
+        } finally{ lock.unlock(); }
     }
 
     public void closeDay(String date){
@@ -144,7 +154,7 @@ public class GestInfo {
         } finally { lock.unlock(); }
     }
 
-    public String flightsReservations(){
+    public String reservationsList(){
         try{
             lock.lock();
             StringBuilder builder = new StringBuilder();
@@ -152,7 +162,7 @@ public class GestInfo {
             else{
                 for(Map.Entry<Integer,Viagem> v : this.getUser(this.user).getHistoric().entrySet()){
                     builder.append("\nCódigo: ").append(v.getKey()).append("\n");
-                    builder.append(v.getValue().toStringComplete());
+                    builder.append(v.getValue().toString());
                 }
             }
             return builder.toString();

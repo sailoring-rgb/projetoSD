@@ -226,7 +226,7 @@ public class Client {
             try {
                 //System.out.println("Lista de voos (origem -> destino): ");
                 //listaVoos();
-                System.out.print("\nInsira percurso completo (origem->destino): ");
+                System.out.print("\nInsira percurso completo (Origem->Destino): ");
                 String trip = stdin.readLine();
                 System.out.print("Insira intervalo de data possíveis (AAAA-MM-DD;AAAA-MM-DD): ");
                 String interval = stdin.readLine();
@@ -277,7 +277,7 @@ public class Client {
                 multi.send(5,(" ").getBytes());
 
                 byte[] reply = multi.receive(5);
-                System.out.print("\n\n\033[4;30mLista de voos (origem->destino):\033[0m");
+                System.out.print("\n\n\033[4;30mLista de voos (Origem->Destino):\033[0m");
                 System.out.print("\n");
                 System.out.println(new String(reply));
             } catch (IOException | InterruptedException e) {
@@ -336,7 +336,7 @@ public class Client {
                 multi.send(8,(" ").getBytes());
 
                 byte[] reply = multi.receive(8);
-                System.out.print("\n\n\033[4;30mReservas de Voos (origem->destino):\033[0m");
+                System.out.print("\n\n\033[4;30mReservas de Voos (Origem->Destino):\033[0m");
                 System.out.print("\n");
                 System.out.println(new String(reply));
             } catch (IOException | InterruptedException e) {

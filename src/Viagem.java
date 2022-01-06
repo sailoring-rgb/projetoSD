@@ -83,13 +83,7 @@ public class Viagem {
         return new Viagem(this);
     }
 
-    public String toString () {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Route: ").append(this.origin + "->" + this.destiny);
-        return builder.toString();
-    }
-
-    public String toStringComplete () {
+    public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
         StringBuilder builder = new StringBuilder();
         builder.append("*** Route: ").append(this.origin + "->" + this.destiny).append("\n");
