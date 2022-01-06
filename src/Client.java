@@ -127,12 +127,12 @@ public class Client {
                 byte[] reply = multi.receive(1);
                 int error = Integer.parseInt(new String(reply));
                 byte[] reply1 = multi.receive(1);
-                isAdmin = Boolean.parseBoolean(new String(reply1));
-                byte[] reply2 = multi.receive(1);
                 System.out.println("\n");
                 if(error==0){
-                    System.out.print(new String(reply2) + "\n\n\n");
+                    String[] tokens = new String(reply1).split("-");
+                    System.out.print(tokens[0] + "\n\n\n");
                     user = name;
+                    isAdmin = Boolean.parseBoolean(tokens[1]);
                     if(isAdmin) funcionalidadesAdmin();
                     else funcionalidadesBasicas();
                 }else

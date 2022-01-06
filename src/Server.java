@@ -31,11 +31,10 @@ public class Server {
                                     System.out.print("A validar as credenciais...\n\n");
                                     connections.put(tokens[0],c);
                                     c.send(frame.tag, String.valueOf(cond).getBytes());
-                                    c.send(frame.tag, String.valueOf(info.getUser(tokens[0]).getIsAdministrador()).getBytes());
-                                    c.send(frame.tag, ("Login efetuado com sucesso!!").getBytes());
+                                    c.send(frame.tag, ("Login efetuado com sucesso!!"+"-"+info.getUser(tokens[0]).getIsAdministrador()+"-").getBytes());
                                 }
                             }
-                            else if (frame.tag == 2) {
+                            else if (frame.tag == 2){
                                 String[] tokens = data.split(" ");
                                 if(info.signup(tokens[0],tokens[1],tokens[2],Boolean.parseBoolean(tokens[3]))) {
                                     System.out.print("A registar o novo cliente...\n\n");
@@ -75,14 +74,13 @@ public class Server {
                                 info.closeDay(tokens[0]);
                                 c.send(frame.tag,"\n\nEncerramento efetuado com sucesso!!".getBytes());
                             }
-
                             else if(frame.tag == 8){
                                 System.out.print("A carregar reservas de voos...\n\n");
                                 String list = info.flightsReservations();
                                 c.send(frame.tag,list.getBytes());
                             }
 
-                        } catch ( UsernameAlreadyExists | UsernameNotExist | WrongPassword | ClosedDate | CodeNotExist e) {
+                        } catch ( UserNotExist | WrongPass | UsernameAlreadyExists | ClosedDate | CodeNotExist e) {
                             cond = 1;
                             c.send(frame.tag, String.valueOf(cond).getBytes());
                             c.send(frame.tag, e.getMessage().getBytes());

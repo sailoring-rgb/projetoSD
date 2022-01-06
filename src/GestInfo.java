@@ -3,7 +3,13 @@ import Exceptions.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class GestInfo {
@@ -32,24 +38,24 @@ public class GestInfo {
             lock.lock();
             if (credentials.containsKey(username)){
                 throw new UsernameAlreadyExists("Este username não está disponível");
-            } else{
+            } else {
                 Map<Integer,Viagem> historic = new HashMap<>();
                 User user = new User(username,password,name,isAdmin,historic);
                 this.user = username;
-                credentials.put(username,user.clone());
+                credentials.put(this.user,user.clone());
                 return true;
             }
         }
         finally { lock.unlock(); }
     }
 
-    public boolean login(String username, String password) throws UsernameNotExist, WrongPassword {
+    public boolean login(String user, String password) throws UserNotExist, WrongPass {
         try {
             lock.lock();
-            if (!credentials.containsKey(username)) throw new UsernameNotExist("Este username não existe");
-            String userPassword = credentials.get(username).getPassword();
-            if (!userPassword.equals(password)) throw new WrongPassword("Esta password está incorreta");
-            this.user = username;
+            if (!credentials.containsKey(user)) throw new UserNotExist("Este username não existe");
+            String userPassword = credentials.get(user).getPassword();
+            if (!userPassword.equals(password)) throw new WrongPass("Esta password está incorreta");
+            this.user = user;
             return true;
         }
         finally { lock.unlock(); }
