@@ -9,9 +9,9 @@ import java.util.concurrent.locks.ReentrantLock;
 public class GestInfo {
     private String user;
     private ReentrantLock lock = new ReentrantLock();
-    private Map<String,User> credentials;
+    private Map<String,User> credentials;       // username; user desse username
     private Set<LocalDateTime> closedDates;
-    private Map<String,Integer> flights;
+    private Map<String,Integer> flights;        // percurso do voo; capacidade do voo
 
     public GestInfo() {
         this.credentials = new HashMap<>();
@@ -55,7 +55,7 @@ public class GestInfo {
         finally { lock.unlock(); }
     }
 
-    public int makeReservation(String route, String dates) throws ClosedDate, FlightNotAvailable{
+    public int makeReservation(String route, String dates) throws ClosedDate, FlightNotAvailable, FlightOverbooked{
         try {
             lock.lock();
             List<String> tokens1 = Arrays.asList(route.split("->"));  // escalas do percurso
@@ -66,13 +66,16 @@ public class GestInfo {
             Viagem flight;
             int size = tokens1.size();
             if(flightAvailable(tokens1,size)){
-                flight = new Viagem(tokens1.get(0),tokens1.get(size-1),date);
+                flight = new Viagem(tokens1,date);
+                // decrementar a capacidade de cada um dos voos
+                for (int i = 1; i <= size-1; i++) {
+                    String escala = tokens1.get(i-1) + "->" + tokens1.get(i);
+                    int capacity = this.flights.get(escala);
+                    this.flights.put(escala,capacity-1);
+                }
                 return this.getUser(user).addHistoric(flight);
             }
             else throw new FlightNotAvailable("Este voo não está disponível");
-
-            // NOTA: A CAPACIDADE DO VOO NÃO É DECREMENTADA, BEM COMO, QUANDO É CANCELADA, NÃO É INCREMENTADA.
-
         } finally { lock.unlock(); }
     }
 
@@ -94,14 +97,22 @@ public class GestInfo {
     }
 
     public void cancelReservation(String codString) throws CodeNotExist, ClosedDate {
+        int codigo = Integer.parseInt(codString);
         try {
             lock.lock();
-            int codigo = Integer.parseInt(codString);
-            if (!this.getUser(this.user).getHistoric().containsKey(codigo))
-                throw new CodeNotExist("Este código de reserva não existe");
+            if (!this.getUser(this.user).getHistoric().containsKey(codigo)) throw new CodeNotExist("Este código de reserva não existe");
             Viagem flight = this.getUser(this.user).getHistoric().get(codigo);
+
             if (closedDates.contains(flight.getDeparture())) throw new ClosedDate("Este dia foi encerrado");
             this.getUser(this.user).removeHistoric(codigo);
+
+            // incrementar a capacidade de cada um dos voos
+            List<String> route = flight.returnRoute();
+            for(int i = 1; i <= route.size()-1; i++){
+                String escala = route.get(i-1) + "->" + route.get(i);
+                int capacity = this.flights.get(escala);
+                this.flights.put(escala,capacity+1);
+            }
         } finally { lock.unlock(); }
     }
 
@@ -119,14 +130,14 @@ public class GestInfo {
         } finally { lock.unlock(); }
     }
 
-    public boolean flightAvailable(List<String> tokens, int size){
+    public boolean flightAvailable(List<String> tokens, int size) throws FlightOverbooked{
         boolean exists = false;
-        System.out.println(tokens);
         try{
             lock.lock();
             for (int i = 1; i <= size-1; i++) {
                 String res2 = tokens.get(i-1) + "->" + tokens.get(i);
-                if(this.flights.containsKey(res2) && this.flights.get(res2) > 0){
+                if(this.flights.containsKey(res2)){
+                    if(this.flights.get(res2) <= 0) throw new FlightOverbooked("A capacidade máxima já foi atingida");
                     exists = true;
                     break;
                 }

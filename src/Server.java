@@ -81,7 +81,7 @@ public class Server {
                             }
 
                         } catch ( UserNotExist | WrongPass | UsernameAlreadyExists | ClosedDate |
-                                  CodeNotExist | FlightNotAvailable e) {
+                                  CodeNotExist | FlightNotAvailable | FlightOverbooked e) {
                             cond = 1;
                             c.send(frame.tag, String.valueOf(cond).getBytes());
                             c.send(frame.tag, e.getMessage().getBytes());

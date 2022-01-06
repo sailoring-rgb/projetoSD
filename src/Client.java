@@ -224,8 +224,6 @@ public class Client {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         Thread t = new Thread(() -> {
             try {
-                //System.out.println("Lista de voos (origem -> destino): ");
-                //listaVoos();
                 System.out.print("\nInsira percurso completo (Origem->Destino): ");
                 String trip = stdin.readLine();
                 System.out.print("Insira intervalo de data possíveis (AAAA-MM-DD;AAAA-MM-DD): ");
