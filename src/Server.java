@@ -27,7 +27,7 @@ public class Server {
                         try {
                             if (frame.tag == 1) {
                                 String[] tokens = data.split(" ");
-                                if (info.validateUser(tokens[0],tokens[1])) {
+                                if (info.login(tokens[0],tokens[1])) {
                                     System.out.print("A validar as credenciais...\n\n");
                                     connections.put(tokens[0],c);
                                     c.send(frame.tag, String.valueOf(cond).getBytes());
@@ -37,7 +37,7 @@ public class Server {
                             }
                             else if (frame.tag == 2) {
                                 String[] tokens = data.split(" ");
-                                if(info.registerUser(tokens[0],tokens[1],tokens[2],Boolean.parseBoolean(tokens[3]))) {
+                                if(info.signup(tokens[0],tokens[1],tokens[2],Boolean.parseBoolean(tokens[3]))) {
                                     System.out.print("A registar o novo cliente...\n\n");
                                     connections.put(tokens[0], c);
                                     c.send(frame.tag, String.valueOf(cond).getBytes());

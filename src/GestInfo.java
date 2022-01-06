@@ -27,7 +27,7 @@ public class GestInfo {
         finally { lock.unlock(); }
     }
 
-    public boolean registerUser(String username, String password, String name, Boolean isAdmin) throws UsernameAlreadyExists {
+    public boolean signup(String username, String password, String name, Boolean isAdmin) throws UsernameAlreadyExists {
         try {
             lock.lock();
             if (credentials.containsKey(username)){
@@ -43,7 +43,7 @@ public class GestInfo {
         finally { lock.unlock(); }
     }
 
-    public boolean validateUser(String username, String password) throws UsernameNotExist, WrongPassword {
+    public boolean login(String username, String password) throws UsernameNotExist, WrongPassword {
         try {
             lock.lock();
             if (!credentials.containsKey(username)) throw new UsernameNotExist("Este username não existe");
