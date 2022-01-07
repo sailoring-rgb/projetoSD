@@ -3,6 +3,7 @@ import Exceptions.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -55,7 +56,7 @@ public class GestInfo {
         finally { lock.unlock(); }
     }
 
-    public int makeReservation(String route, String dates) throws ClosedDate, FlightNotAvailable, FlightOverbooked{
+    public int makeReservation(String route, String dates) throws ClosedDate, FlightNotAvailable, FlightOverbooked, FormatNotValid{
         try {
             lock.lock();
             List<String> tokens1 = Arrays.asList(route.split("->"));  // escalas do percurso
@@ -79,21 +80,20 @@ public class GestInfo {
         } finally { lock.unlock(); }
     }
 
-    public LocalDateTime pickDate(String[] tokens) throws ClosedDate {
+    public LocalDateTime pickDate(String[] tokens) throws ClosedDate, FormatNotValid{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
         try {
             lock.lock();
-            LocalDateTime date1 = LocalDate.parse(tokens[0], formatter).atStartOfDay();
-            LocalDateTime date2 = LocalDate.parse(tokens[1], formatter).atStartOfDay();
+            LocalDateTime date1 = isValid(tokens[0]);
+            LocalDateTime date2 = isValid(tokens[1]);
+            if(date1 == null || date2 == null) throw new FormatNotValid("Esta data não está no formato correto");
             if(closedDates.isEmpty()) return date1;
             else{
                 if (!closedDates.contains(date1)) return date1;
                 else if (!closedDates.contains(date2)) return date2;
                 else throw new ClosedDate("Estes dias foram encerrados");
             }
-        } finally {
-            lock.unlock();
-        }
+        } finally { lock.unlock(); }
     }
 
     public void cancelReservation(String codString) throws CodeNotExist, ClosedDate {
@@ -177,6 +177,16 @@ public class GestInfo {
                 }
             }
             return builder.toString();
-        }finally{ lock.unlock();}
+        } finally{ lock.unlock(); }
+    }
+
+    public LocalDateTime isValid(String dateStr) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
+        try {
+            LocalDateTime date = LocalDate.parse(dateStr, formatter).atStartOfDay();
+            return date;
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 }
