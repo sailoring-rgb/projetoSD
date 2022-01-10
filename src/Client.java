@@ -1,7 +1,11 @@
 import java.net.Socket;
 
-import java.net.Socket;
 import java.io.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Locale;
 
 public class Client {
     private static String user;
@@ -45,7 +49,7 @@ public class Client {
     }
 
 
-    public static void funcionalidadesAdmin() throws IOException, InterruptedException {
+    public static void menuAdmin() throws IOException, InterruptedException {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         boolean res = true;
         while(res) {
@@ -61,17 +65,17 @@ public class Client {
             System.out.print("Introduza a opção: ");
             String option = stdin.readLine();
             if (option.equals("1"))
-                insereInformacao();
+                insertInfo();
             else if (option.equals("2"))
-                encerraDia();
+                closeDay();
             else if (option.equals("3"))
-                reservaViagem();
+                reserveFlight();
             else if (option.equals("4"))
-                cancelaReserva();
+                cancelReservation();
             else if (option.equals("5"))
-                listaVoos();
+                flightsList();
             else if(option.equals("6"))
-                reservasDeVoos();
+                reservationsList();
             else if (option.equals("0")) {
                 logout(1);
                 res = false;
@@ -80,7 +84,7 @@ public class Client {
         }
     }
 
-    public static void funcionalidadesBasicas() throws IOException, InterruptedException {
+    public static void menuNormalUser() throws IOException, InterruptedException {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         boolean res = true;
         while(res) {
@@ -94,13 +98,13 @@ public class Client {
                     + "Introduza a opção: ");
             String option = stdin.readLine();
             if (option.equals("1"))
-                reservaViagem();
+                reserveFlight();
             else if (option.equals("2"))
-                cancelaReserva();
+                cancelReservation();
             else if (option.equals("3"))
-                listaVoos();
+                flightsList();
             else if(option.equals("4"))
-                reservasDeVoos();
+                reservationsList();
             else if (option.equals("0")){
                 logout(1);
                 res = false;
@@ -133,8 +137,8 @@ public class Client {
                     System.out.print(tokens[0] + "\n\n\n");
                     user = name;
                     isAdmin = Boolean.parseBoolean(tokens[1]);
-                    if(isAdmin) funcionalidadesAdmin();
-                    else funcionalidadesBasicas();
+                    if(isAdmin) menuAdmin();
+                    else menuNormalUser();
                 }else
                     System.out.println("\033[0;31m" + new String(reply1) + ": Falha na autenticação" + "\n\n\033[0m");
             }
@@ -185,8 +189,8 @@ public class Client {
                 if(error==0){
                     System.out.println(new String(reply1) + "\n\n");
                     user = username;
-                    if(isAdmin) funcionalidadesAdmin();
-                    else funcionalidadesBasicas();
+                    if(isAdmin) menuAdmin();
+                    else menuNormalUser();
                 }else{
                     System.out.print("\033[0;31m" + new String(reply1) + ": Registo não efetuado!!" + "\n\n\033[0m");
                 }
@@ -220,16 +224,27 @@ public class Client {
         thread.join();
     }
 
-    public static void reservaViagem() throws InterruptedException {
+    public static void reserveFlight() throws InterruptedException {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         Thread t = new Thread(() -> {
+            int controlo = -1;
+            String date1 = null;
+            String date2 = null;
             try {
                 System.out.print("\nInsira percurso completo (Origem->Destino): ");
                 String trip = stdin.readLine();
-                System.out.print("Insira intervalo de data possíveis (AAAA-MM-DD;AAAA-MM-DD): ");
-                String interval = stdin.readLine();
 
-                multi.send(3, (trip+" "+interval+" ").getBytes());
+                while(controlo == -1){
+                    System.out.print("Insira intervalo de data possíveis (AAAA-MM-DD;AAAA-MM-DD): ");
+                    String interval = stdin.readLine();
+                    String[] tokens = interval.split(";");
+                    date1 = isValid(tokens[0]);
+                    date2 = isValid(tokens[1]);
+                    if(date1 == null || date2 == null)
+                        System.out.print("\n\033[0;31mO intervalo não está no formato correto!\033[0m\n\n");
+                    else controlo = 0;
+                }
+                multi.send(3, (trip+" "+date1+" "+date2+" ").getBytes());
 
                 byte[] reply = multi.receive(3);
                 int error = Integer.parseInt(new String(reply));
@@ -246,7 +261,7 @@ public class Client {
         t.join();
     }
 
-    public static void cancelaReserva() throws InterruptedException {
+    public static void cancelReservation() throws InterruptedException {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         Thread t = new Thread(() -> {
             try{
@@ -269,7 +284,7 @@ public class Client {
         t.join();
     }
 
-    public static void listaVoos() throws InterruptedException {
+    public static void flightsList() throws InterruptedException {
         Thread t = new Thread(() -> {
             try {
                 multi.send(5,(" ").getBytes());
@@ -286,7 +301,7 @@ public class Client {
         t.join();
     }
 
-    public static void insereInformacao() throws InterruptedException {
+    public static void insertInfo() throws InterruptedException {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         Thread t = new Thread(() -> {
             try{
@@ -309,7 +324,7 @@ public class Client {
         t.join();
     }
 
-    public static void encerraDia() throws InterruptedException {
+    public static void closeDay() throws InterruptedException {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         Thread t = new Thread(() -> {
             try{
@@ -328,7 +343,7 @@ public class Client {
         t.join();
     }
 
-    public static void reservasDeVoos() throws InterruptedException{
+    public static void reservationsList() throws InterruptedException{
         Thread t = new Thread(() -> {
             try {
                 multi.send(8,(" ").getBytes());
@@ -345,6 +360,16 @@ public class Client {
         t.join();
     }
 
+    public static String isValid(String input) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
+        try {
+            LocalDateTime date = LocalDate.parse(input,formatter).atStartOfDay();
+            return date.format(formatter);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+    }
+
     public static void main(String[] args) throws Exception{
         Socket socket = new Socket("localhost",12343);
         multi = new Demultiplexer(new TaggedConnection(socket));
@@ -359,5 +384,4 @@ public class Client {
         multi.start();
         run();
     }
-
 }

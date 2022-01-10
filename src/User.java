@@ -1,7 +1,6 @@
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class User {
@@ -9,13 +8,13 @@ public class User {
     private String password;
     private String name;
     private boolean isAdministrador; /** false -> user normal ; true -> administrador */
-    private Map<Integer,Viagem> historic; // código de reserva; viagem
+    private Map<Integer, Flight> historic; /** código de reserva; viagem */
     private ReadWriteLock lockRW = new ReentrantReadWriteLock();
     private Lock readlock = lockRW.readLock();
     private Lock writelock = lockRW.writeLock();
     //ReentrantLock lock = new ReentrantLock();
 
-    public User(String username, String password, String name, boolean isSpecial, Map<Integer,Viagem> historic) {
+    public User(String username, String password, String name, boolean isSpecial, Map<Integer, Flight> historic) {
         this.username = username;
         this.password = password;
         this.name = name;
@@ -63,7 +62,7 @@ public class User {
         finally { readlock.unlock(); }
     }
 
-    public Map<Integer,Viagem> getHistoric() {
+    public Map<Integer, Flight> getHistoric() {
         try{
             readlock.lock();
             return new HashMap<>(this.historic);
@@ -71,7 +70,7 @@ public class User {
         finally { readlock.unlock(); }
     }
 
-    public int addHistoric(Viagem v) {
+    public int addHistoric(Flight v) {
         try{
             writelock.lock();
             this.historic.put(this.historic.size()+1,v.clone());

@@ -46,9 +46,9 @@ public class Server {
                             else if (frame.tag == 3) {
                                 String[] tokens = data.split(" ");
                                 System.out.print("A reservar viagem...\n");
-                                int codigo = info.makeReservation(tokens[0],tokens[1]);
+                                int code = info.reserveFlight(tokens[0],tokens[1],tokens[2]);
                                 c.send(frame.tag,String.valueOf(cond).getBytes());
-                                c.send(frame.tag,("Reserva efetuada com sucesso!!: Código "+codigo).getBytes());
+                                c.send(frame.tag,("Reserva efetuada com sucesso!!: Código "+code).getBytes());
                             }
                             else if (frame.tag == 4) {
                                 String[] tokens = data.split(" ");
@@ -65,7 +65,7 @@ public class Server {
                             else if (frame.tag == 6){
                                 String[] tokens = data.split(" ");
                                 System.out.print("A inserir informação sobre voo...\n");
-                                info.insertInf(tokens[0],tokens[1],tokens[2]);
+                                info.insertInfo(tokens[0],tokens[1],tokens[2]);
                                 c.send(frame.tag,"\n\nInformação inserida com sucesso!!".getBytes());
                             }
                             else if (frame.tag == 7){
@@ -81,7 +81,7 @@ public class Server {
                             }
 
                         } catch ( UserNotExist | WrongPass | UsernameAlreadyExists | ClosedDate |
-                                  CodeNotExist | FlightNotAvailable | FlightOverbooked | FormatNotValid e) {
+                                  CodeNotExist | FlightNotAvailable | FlightOverbooked e) {
                             cond = 1;
                             c.send(frame.tag, String.valueOf(cond).getBytes());
                             c.send(frame.tag, e.getMessage().getBytes());

@@ -3,27 +3,23 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class Viagem {
+public class Flight {
     private String origin;
     private String destiny;
     private List<String> escalas;
     private LocalDateTime departure;
-    private ReadWriteLock lockRW = new ReentrantReadWriteLock();
-    private Lock readlock = lockRW.readLock();
-    private Lock writelock = lockRW.writeLock();
+    ReentrantLock lock = new ReentrantLock();
 
-    public Viagem(List<String> route, LocalDateTime departure){
+    public Flight(List<String> route, LocalDateTime departure){
         this.origin = route.get(0);
         this.destiny = route.get(route.size()-1);
         this.escalas = defineEscalas(route);
         this.departure = departure;
     }
 
-    public Viagem(Viagem viagem){
+    public Flight(Flight viagem){
         this.origin = viagem.getOrigin();
         this.destiny = viagem.getDestiny();
         this.escalas = viagem.getEscalas();
@@ -32,55 +28,55 @@ public class Viagem {
 
     public String getOrigin() {
         try{
-            readlock.lock();
+            lock.lock();
             return this.origin;
-        } finally { readlock.unlock(); }
+        } finally { lock.unlock(); }
     }
 
     public String getDestiny() {
         try{
-            readlock.lock();
+            lock.lock();
             return this.destiny;
-        } finally { readlock.unlock(); }
+        } finally { lock.unlock(); }
     }
 
     public LocalDateTime getDeparture() {
         try{
-            readlock.lock();
+            lock.lock();
             return this.departure;
-        } finally { readlock.unlock(); }
+        } finally { lock.unlock(); }
     }
 
     public List<String> defineEscalas(List<String> route){
         try{
-            writelock.lock();
+            lock.lock();
             List<String> escalas = new ArrayList<>(route);
             escalas.remove(0);
             escalas.remove(escalas.size()-1);
             return new ArrayList<>(escalas);
-        } finally { writelock.unlock(); }
+        } finally { lock.unlock(); }
     }
 
     public List<String> getEscalas(){
         try{
-            readlock.lock();
+            lock.lock();
             return new ArrayList<>(this.escalas);
-        } finally { readlock.unlock(); }
+        } finally { lock.unlock(); }
     }
 
     public List<String> returnRoute(){
         try{
-            writelock.lock();
+            lock.lock();
             List<String> route = new ArrayList<>();
             route.add(this.origin);
             route.addAll(this.escalas);
             route.add(this.destiny);
             return new ArrayList<>(route);
-        } finally { writelock.unlock(); }
+        } finally { lock.unlock(); }
     }
 
-    public Viagem clone(){
-        return new Viagem(this);
+    public Flight clone(){
+        return new Flight(this);
     }
 
     public String toString() {
