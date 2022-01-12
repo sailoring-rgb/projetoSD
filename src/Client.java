@@ -312,7 +312,7 @@ public class Client {
                 System.out.print("Insira a capacidade do voo: ");
                 String capacity = stdin.readLine();
 
-                multi.send(6, (origin+" "+destiny+" "+capacity+" ").getBytes());
+                multi.send(6, (origin+";"+destiny+";"+capacity+";").getBytes());
 
                 byte[] reply = multi.receive(6);
                 System.out.println(new String(reply));

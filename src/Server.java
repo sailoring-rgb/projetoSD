@@ -63,7 +63,7 @@ public class Server {
                                 c.send(frame.tag,list.getBytes());
                             }
                             else if (frame.tag == 6){
-                                String[] tokens = data.split(" ");
+                                String[] tokens = data.split(";");
                                 System.out.print("A inserir informação sobre voo...\n");
                                 info.insertInfo(tokens[0],tokens[1],tokens[2]);
                                 c.send(frame.tag,"\n\nInformação inserida com sucesso!!".getBytes());

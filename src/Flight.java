@@ -82,7 +82,9 @@ public class Flight {
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
         StringBuilder builder = new StringBuilder();
-        builder.append("*** Route: ").append(this.origin + "->" + String.join("->", this.escalas) + "->" + this.destiny).append("\n");
+        if(this.escalas.isEmpty())
+            builder.append("*** Route: ").append(this.origin).append("->").append(this.destiny).append("\n");
+        else builder.append("*** Route: ").append(this.origin + "->" + String.join("->", this.escalas) + "->" + this.destiny).append("\n");
         builder.append("*** Departure: ").append(this.departure.format(formatter)).append("\n");
         return builder.toString();
     }
