@@ -59,7 +59,6 @@ public class GestInfo {
         try {
             lock.lock();
             List<String> tokens1 = Arrays.asList(route.split("->"));  // escalas do percurso
-
             LocalDateTime date = pickDate(date1,date2);
 
             Flight flight;
@@ -165,6 +164,11 @@ public class GestInfo {
                 for (String s: this.flights.keySet()) {
                     String newS = "Route: " + s;
                     res1 = String.join("\n", res1, newS);
+                    if(getUser(this.user).getIsAdministrador()){
+                        String capacity = "*** Capacity: " + this.flights.get(s);
+                        res1 = String.join("\n", res1, capacity);
+                        res1 = String.join("",res1,"\n");
+                    }
                 }
             return res1;
         } finally { lock.unlock(); }

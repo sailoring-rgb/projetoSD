@@ -42,7 +42,7 @@ public class Client {
             else if (option.equals("0"))
                 logout(0);
             else{
-                System.out.println("\033[0;31mOpção incorreta!\033[0m");
+                System.out.println("\n\033[0;31mOpção incorreta!\033[0m");
                 System.out.println("\n\n");
             }
         }
@@ -79,7 +79,7 @@ public class Client {
             else if (option.equals("0")) {
                 logout(1);
                 res = false;
-            } else System.out.println("\033[0;31mOpção incorreta!\033[0m");
+            } else System.out.println("\n\033[0;31mOpção incorreta!\033[0m");
             System.out.println("\n\n");
         }
     }
@@ -109,7 +109,7 @@ public class Client {
                 logout(1);
                 res = false;
             }
-            else System.out.println("\033[0;31mOpção incorreta!\033[0m");
+            else System.out.println("\n\033[0;31mOpção incorreta!\033[0m");
             System.out.println("\n\n");
         }
     }
@@ -244,7 +244,7 @@ public class Client {
                         System.out.print("\n\033[0;31mO intervalo não está no formato correto!\033[0m\n\n");
                     else controlo = 0;
                 }
-                multi.send(3, (trip+" "+date1+" "+date2+" ").getBytes());
+                multi.send(3, (trip+";"+date1+";"+date2+";").getBytes());
 
                 byte[] reply = multi.receive(3);
                 int error = Integer.parseInt(new String(reply));

@@ -44,7 +44,7 @@ public class Server {
                                 }
                             }
                             else if (frame.tag == 3) {
-                                String[] tokens = data.split(" ");
+                                String[] tokens = data.split(";");
                                 System.out.print("A reservar viagem...\n");
                                 int code = info.reserveFlight(tokens[0],tokens[1],tokens[2]);
                                 c.send(frame.tag,String.valueOf(cond).getBytes());
