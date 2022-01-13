@@ -327,18 +327,24 @@ public class Client {
     public static void closeDay() throws InterruptedException {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         Thread t = new Thread(() -> {
+            int controlo = -1;
+            String day = null;
             try{
-                System.out.print("\nInsira dia (AAAA-MM-DD): ");
-                String day = stdin.readLine();
+                while(controlo == -1){
+                    System.out.print("\nInsira dia (AAAA-MM-DD): ");
+                    day = isValid(stdin.readLine());
+                    if(day == null)
+                        System.out.print("\n\033[0;31mO intervalo não está no formato correto!\033[0m\n\n");
+                    else controlo = 0;
+                }
 
                 multi.send(7, (day+" ").getBytes());
 
                 byte[] reply = multi.receive(7);
                 int error = Integer.parseInt(new String(reply));
                 byte[] reply1 = multi.receive(7);
-                System.out.print("\n\n");
                 if (error == 0) System.out.println(new String(reply1));
-                else System.out.print("\033[0;31m" + new String(reply1) + ": Encerramento sem efeito!!" + "\n\n\033[0m");
+                else System.out.print("\n\033[0;31m" + new String(reply1) + ": Encerramento sem efeito!!" + "\n\n\033[0m");
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }

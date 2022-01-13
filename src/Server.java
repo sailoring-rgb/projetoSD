@@ -72,6 +72,7 @@ public class Server {
                                 String[] tokens = data.split(" ");
                                 System.out.print("A encerrar dia...\n");
                                 info.closeDay(tokens[0]);
+                                c.send(frame.tag,String.valueOf(cond).getBytes());
                                 c.send(frame.tag,"\n\nEncerramento efetuado com sucesso!!".getBytes());
                             }
                             else if(frame.tag == 8){
