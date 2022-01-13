@@ -237,12 +237,16 @@ public class Client {
                 while(controlo == -1){
                     System.out.print("Insira intervalo de data possíveis (AAAA-MM-DD;AAAA-MM-DD): ");
                     String interval = stdin.readLine();
-                    String[] tokens = interval.split(";");
-                    date1 = isValid(tokens[0]);
-                    date2 = isValid(tokens[1]);
-                    if(date1 == null || date2 == null)
-                        System.out.print("\n\033[0;31mO intervalo não está no formato correto!\033[0m\n\n");
-                    else controlo = 0;
+                    String[] tokens = isValid(interval.split(";"));
+                    if(tokens == null)
+                        System.out.println("\n\033[0;31mTem de introduzir um intervalo de datas!\033[0m\n");
+                    else {
+                        date1 = isValid(tokens[0]);
+                        date2 = isValid(tokens[1]);
+                        if (date1 == null || date2 == null)
+                            System.out.print("\n\033[0;31mO intervalo não está no formato correto!\033[0m\n\n");
+                        else controlo = 0;
+                    }
                 }
                 multi.send(3, (trip+";"+date1+";"+date2+";").getBytes());
 
@@ -254,7 +258,7 @@ public class Client {
                 else System.out.print("\033[0;31m" + new String(reply1) + ": Reserva não efetuada!!" + "\n\033[0m");
             }
             catch (NullPointerException | IOException | InterruptedException e) {
-                    System.out.print(e.getMessage() + "\n\n");
+                System.out.print(e.getMessage() + "\n\n");
             }
         });
         t.start();
@@ -334,7 +338,7 @@ public class Client {
                     System.out.print("\nInsira dia (AAAA-MM-DD): ");
                     day = isValid(stdin.readLine());
                     if(day == null)
-                        System.out.print("\n\033[0;31mO intervalo não está no formato correto!\033[0m\n\n");
+                        System.out.print("\n\033[0;31mO intervalo não está no formato correto!\033[0m\n");
                     else controlo = 0;
                 }
 
@@ -344,7 +348,7 @@ public class Client {
                 int error = Integer.parseInt(new String(reply));
                 byte[] reply1 = multi.receive(7);
                 if (error == 0) System.out.println(new String(reply1));
-                else System.out.print("\n\033[0;31m" + new String(reply1) + ": Encerramento sem efeito!!" + "\n\n\033[0m");
+                else System.out.print("\n\n\033[0;31m" + new String(reply1) + ": Encerramento sem efeito!!" + "\n\n\033[0m");
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
@@ -378,6 +382,13 @@ public class Client {
         } catch (DateTimeParseException e) {
             return null;
         }
+    }
+
+    public static String[] isValid(String[] input) {
+
+            if(input.length == 2)
+                return input;
+            else return null;
     }
 
     public static void main(String[] args) throws Exception{
