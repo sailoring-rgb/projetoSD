@@ -146,11 +146,12 @@ public class GestInfo {
         } finally{ lock.unlock(); }
     }
 
-    public void closeDay(String date){
+    public void closeDay(String date) throws DayAlreadyCancelled{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
         LocalDateTime date1 = LocalDate.parse(date, formatter).atStartOfDay();
         try {
             lock.lock();
+            if(this.closedDates.contains(date1)) throw new DayAlreadyCancelled("Dia já encerrado");
             closedDates.add(date1);
         } finally { lock.unlock(); }
     }

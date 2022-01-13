@@ -334,7 +334,11 @@ public class Client {
                 multi.send(7, (day+" ").getBytes());
 
                 byte[] reply = multi.receive(7);
-                System.out.println(new String(reply));
+                int error = Integer.parseInt(new String(reply));
+                byte[] reply1 = multi.receive(7);
+                System.out.print("\n\n");
+                if (error == 0) System.out.println(new String(reply1));
+                else System.out.print("\033[0;31m" + new String(reply1) + ": Encerramento sem efeito!!" + "\n\n\033[0m");
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
