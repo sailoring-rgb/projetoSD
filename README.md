@@ -1,6 +1,6 @@
 # SD
 
-Projetos de Sistemas Distribuídos 21/22
+Projeto de Sistemas Distribuídos 21/22
 
 Classificação do Trabalho Prático: .../20
 
