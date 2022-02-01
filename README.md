@@ -2,7 +2,7 @@
 
 Projeto de Sistemas Distribuídos 21/22
 
-Classificação do Trabalho Prático: .../20
+Classificação do Trabalho Prático: 12/20
 
 # Autores
 
