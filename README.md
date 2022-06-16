@@ -6,7 +6,7 @@ Classificação do Trabalho Prático: 12/20
 
 # Autores
 
-- Ana Murta (@AnaMurta10)
-- Ana Henriques (@AnaHenriques01)
-- José Miguel (@ZeMig00)
-- Miguel Martins (@Zyveth)
+- Ana Murta
+- Ana Henriques
+- José Miguel
+- Miguel Martins
