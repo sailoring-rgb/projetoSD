@@ -1,12 +1,10 @@
 # SD
 
-Projeto de Sistemas Distribuídos 21/22
+Project accomplished in the scope of <b><i>Distributed Systems 21/22</i></b>
 
-Classificação do Trabalho Prático: 12/20
+- Final Classification: 12/20
 
-# Autores
+# Authors
 
-- Ana Murta
-- Ana Henriques
-- José Miguel
-- Miguel Martins
+- <a href="https://github.com/AnaMurta10">Ana Murta</a>
+- <a href="https://github.com/sailoring-rgb">Ana Henriques</a>
